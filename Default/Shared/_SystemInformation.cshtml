@@ -1,0 +1,31 @@
+﻿@model Models.Base.SystemInformationModel
+
+<fieldset>
+    <legend>@Resources.Base.SystemInformation.SystemInfo</legend>
+    <ul>
+        <li>
+            @Html.LabelFor(model => model.Version)
+            <div>@Html.DisplayFor(model => model.Version)</div>
+        </li>
+        <li>
+            @Html.LabelFor(model => model.DotNetVersion)
+            <div>@Html.DisplayFor(model => model.DotNetVersion)</div>
+        </li>
+        @if (Model.IsMonoEnvironment)
+        {
+            <li>
+                @Html.LabelFor(model => model.MonoVersion)
+                <div>@Html.DisplayFor(model => model.MonoVersion)</div>
+            </li>
+
+            if ((new Version(Model.MonoVersion)).Major < 5)
+            {
+                <script>
+                    $(document).ready(function () {
+                        TCAdmin.Ajax.ShowBasicDialog('Error', '<p>Please install Mono 5 or greater. TCAdmin will not work correctly with Mono @Model.MonoVersion.</p> <p><a href="https://help.tcadmin.com/System_Requirements" target="_blank">https://help.tcadmin.com/System_Requirements</a></p>');
+                    });
+                </script>
+            }
+        }
+    </ul>
+</fieldset>

@@ -1,0 +1,53 @@
+﻿@using TCAdmin.Web.MVC.Models.Shared
+@model TCAdmin.Web.MVC.Models.Shared.HeaderModel
+
+@Scripts.Render(this.GetTemplateFileUrl("Shared/_Header.js", true))
+
+<header id="header">
+    @* Logo
+        -------*@
+    <div class="logo-container">
+        <img class="logo" src="@Model.LogoUrl" />
+        @Html.Partial("_Search", new SearchModel())
+        <nav id="breadcrumb"></nav>
+    </div>
+    @Html.Partial("_TemplateSwitcher")
+
+    @* Generate top navigation
+        -------------------------------------------------*@
+    <nav>
+        <div class="nav-fostrap">
+            @Html.Partial("_Search", new SearchModel())
+            <ul>
+                @foreach (var topitem in Model.NavigationItems)
+                {
+                    <li>
+                        <a  id="@topitem.Id" href="@(string.IsNullOrEmpty(topitem.NavigateUrl)?"javascript:void(0)":topitem.NavigateUrl)">@topitem.Text</a>
+                        <ul class="dropdown">
+                            @foreach (var subitem in topitem.Items)
+                            {
+                                <li><a id="@subitem.Id" href="@subitem.NavigateUrl" id="topmenu_@(topitem.Index)_submenu_@(subitem.Index)">@subitem.Text</a></li>
+                            }
+                        </ul>
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="nav-bg-fostrap fixed-top">
+            <div class="navbar-fostrap"> <img src="@this.GetTemplateFileUrl("Images/SmallLogo.*")" /></div>
+            <span class="title-mobile">@ViewBag.Title</span>
+        </div>
+    </nav>
+
+    @* Log out form
+        ---------------*@
+    @using (Html.BeginForm("Logout", "Login", FormMethod.Post, new { id = "logoutForm" }))
+    {
+        @Html.AntiForgeryToken()
+    }
+</header>
+
+<script>
+    window.BreadCrumbItems = @Html.Raw(Json.Encode(Model.BreadCrumb));
+    _Header.Init("@Resources.Global.ClickLogo", "@Resources.Global.SwipeRight", "@Url.Action("_Notifications", "Home")", "@Resources.Base.SessionInformation.UnreadMessages");
+</script>

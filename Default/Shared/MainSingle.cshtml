@@ -1,0 +1,28 @@
+﻿@using TCAdmin.Web.MVC.Models.Shared
+
+<!DOCTYPE html>
+<html>
+<head>
+    @Html.Action("_Background", "Header")
+    @Html.Partial("_Head")
+    @RenderSection("head", required: false)
+</head>
+<body>
+    @(Html.Kendo().Notification()
+                        .Name("popupNotification")
+    )
+    <div id="wrapper">
+        @Html.Action("_Header", "Header", new { title = ViewBag.Title })
+        <div id="content">
+            <div id="main">
+                <div class="header">@Html.Partial("_MainHeader")</div>
+                <div class="detail">@RenderBody()</div>
+            </div>
+            <div class="clear-both push"></div>
+            @Html.Partial("_Dialogs")
+        </div>
+        @Html.Action("_Footer", "Footer")
+    </div>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

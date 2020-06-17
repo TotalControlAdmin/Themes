@@ -1,0 +1,208 @@
+/* This file is used to create ThemeBuilder.css when the theme is saved. It should only contain css that affects colors and borders. */
+/* If your theme uses a different css make a copy of this file and place it in your theme's folder                                   */
+
+BODY {
+    background-color: rgb(255, 255, 255);
+    color: rgb(51, 51, 51);
+}
+
+#main .header-text {
+    background-color: rgb(0, 76, 131);
+    color: rgb(255, 255, 255);
+}
+
+#sidebar fieldset:first-of-type legend {
+    background-color: rgb(0, 76, 131);
+    color: rgb(255, 255, 255);
+}
+
+a:link, a:visited {
+    color: rgb(0, 76, 131);
+}
+
+a:active, a:hover {
+    color: rgb(0, 64, 110);
+}
+
+.nav-fostrap li:hover {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+    .nav-fostrap li:hover > a {
+        color: rgb(51, 51, 51);
+    }
+
+.nav-fostrap li > a {
+    color: rgb(0, 76, 131);
+}
+
+.nav-fostrap li ul.dropdown {
+    background-color: rgb(242, 242, 242);
+    border-color: rgb(242, 242, 242);
+}
+
+    .nav-fostrap li ul.dropdown li a {
+        color: rgb(51, 51, 51);
+    }
+
+    .nav-fostrap li ul.dropdown li:hover {
+        background-color: rgb(0, 76, 131);
+    }
+
+        .nav-fostrap li ul.dropdown li:hover a {
+            color: rgb(255, 255, 255);
+        }
+
+#sidebar > .links a:hover {
+    background-color: rgba(0,76,131,0.08);
+    border: 1px solid rgb(0, 76, 131);
+}
+
+.info-button:hover,
+.info-button {
+    background-color: rgb(0, 0, 255);
+    color: rgb(255, 255, 255);
+    background-image: unset;
+}
+
+.red-button:hover,
+.red-button {
+    background-color: rgb(255, 0, 0);
+    color: rgb(255, 255, 255);
+    background-image: unset;
+}
+
+.orange-button:hover,
+.orange-button {
+    background-color: rgb(255, 165, 0);
+    color: rgb(255, 255, 255);
+    background-image: unset;
+}
+
+.green-button:hover,
+.green-button {
+    background-color: rgb(0, 128, 0);
+    color: rgb(255, 255, 255);
+    background-image: unset;
+}
+
+.info-label {
+    color: ;
+}
+
+.red-label {
+    color: red;
+}
+
+.green-label {
+    color: green;
+}
+
+.orange-label {
+    color: orange;
+}
+
+.popup-script-loading-success {
+    color: green;
+}
+
+.popup-script-loading-failure {
+    color: red;
+}
+
+.k-i-cancel:before {
+    color: red;
+}
+
+.k-i-save:before {
+    color: green;
+}
+
+.k-i-unlock:before,
+.k-i-lock:before {
+    color: green;
+}
+
+.k-i-notification:before {
+    color: orange;
+}
+
+.field-validation-error {
+    color: red;
+}
+
+.validation-summary-errors {
+    color: red;
+}
+
+#sidebar fieldset legend {
+    border-bottom: 1px solid rgb(242, 242, 242);
+}
+
+#footer #info {
+    border-top: 1px solid rgb(242, 242, 242);
+}
+
+.navbar-fostrap > img,
+.logo {
+    filter: invert(19%) sepia(25%) saturate(6593%) hue-rotate(187deg) brightness(97%) contrast(102%);
+}
+
+@media only screen and (max-width:900px) {
+    .nav-fostrap,
+    .nav-bg-fostrap {
+        background-color: rgb(255, 255, 255);
+    }
+
+        .nav-bg-fostrap .title-mobile {
+            color: rgb(51, 51, 51);
+        }
+
+    #sidebar ul,
+    #sidebar {
+        background-color: rgb(255, 255, 255);
+    }
+}
+
+@media only screen and (min-width:901px) {
+    .nav-fostrap::before {
+        content: "";
+        float: left;
+        margin-top: -16px;
+        border-bottom: 1px solid rgb(0, 76, 131);
+        width: 220px;
+        margin-left: 10px;
+    }
+}
+
+/*session info in the top right corner*/
+#header .search-container {
+    border-radius: 8px;
+}
+
+#breadcrumb {
+    border-radius: 8px;
+}
+
+#main .header-text {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+#sidebar fieldset:first-of-type legend {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+.nav-fostrap .search-container > span {
+    border-radius: 8px;
+}
+
+li > ul.dropdown {
+    border-radius: 8px;
+}
+
+.nav-fostrap li ul.dropdown li:hover {
+    border-radius: 8px;
+}

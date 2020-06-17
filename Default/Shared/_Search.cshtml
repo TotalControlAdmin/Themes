@@ -1,0 +1,41 @@
+﻿@model TCAdmin.Web.MVC.Models.Shared.SearchModel
+
+@{ 
+    var uniqueid = Guid.NewGuid().ToString("N");
+}
+
+<div class="search-container">
+    @(Html.Kendo().AutoComplete()
+        .AutoWidth(true)
+        .HtmlAttributes(new { style="width:200px"})
+        .Events(e => e.Select("globalSearch_OnSelect" + uniqueid))
+        .Name("globalsearch" + uniqueid)
+        .DataTextField("SearchDisplay")
+        .Filter("contains")
+        .MinLength(2)
+        .Placeholder(Resources.Base.Search.QuickSearch)
+        .DataSource(source => source
+        .Custom()
+        .Group(g => g.Add("SearchGroup", typeof(string)))
+        .Transport(transport => transport
+        .Read(read =>
+        {
+            read.Action("Read", "AutoComplete")
+                .Data("globalSearch_OnAdditionalData");
+        }))
+        .ServerFiltering(true))
+    )
+</div>
+
+<script>
+    function globalSearch_OnAdditionalData() {
+        return {
+            text: $("#globalsearch@(uniqueid)").val()
+        };
+    }
+
+    function globalSearch_OnSelect@(uniqueid)(e) {
+        var dataItem = this.dataItem(e.item.index());
+        window.location.href = dataItem.SearchUrl;
+    }
+</script>

@@ -1,0 +1,15 @@
+﻿@model Models.Base.UsersModel
+
+@{
+    Layout = this.GetTemplateFile("Shared/Main.cshtml", true);
+}
+
+@section head{
+    @Styles.Render("~/Content/grid.css")
+}
+
+@section sidebar{
+@Html.Partial(this.GetTemplateFile("Shared/_GridSettings.cshtml"), this.Model.GridSettings)
+}
+
+@Html.Partial(this.GetTemplateFile("Shared/_Grid.cshtml"), this.Model)

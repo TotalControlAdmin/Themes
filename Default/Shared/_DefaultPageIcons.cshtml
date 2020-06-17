@@ -1,0 +1,19 @@
+﻿@model List<TCAdmin.SDK.Web.MVC.Models.PageIconInfo>
+
+@functions{
+    public MvcHtmlString LinkIcon(string image)
+    {
+        if (string.IsNullOrEmpty(image)) { return new MvcHtmlString(string.Empty); }
+        return new MvcHtmlString(string.Format("<img src=\"{0}\" />", this.GetTemplateFileUrl(image)));
+    }
+}
+
+<fieldset class="links" id="pageicons">
+    <legend>@Resources.Grid.Manage</legend>
+    <ul>
+        @foreach (var link in Model)
+        {
+        <li><a target="@(link.NewPage?"_blank":"_self")" href="@link.NavigateUrl" class="page-icon" id="@link.Attributes["IconId"]">@LinkIcon(link.ImageUrl64x64)<div><span>@link.Text</span></div></a></li>
+        }
+    </ul>
+</fieldset>

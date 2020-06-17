@@ -1,0 +1,69 @@
+﻿<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width" />
+<title>@TCAdmin.SDK.Web.MVC.Template.GetSelectedTemplateTitle()@ViewBag.Title</title>
+<link rel="shortcut icon" type="image/png" href="@this.GetTemplateFileUrl("Images/FavoriteIcon.*")" />
+
+@{
+    var kendoassembly = System.Reflection.Assembly.GetAssembly(typeof(Kendo.Mvc.UI.Button));
+    var kendoassemblyver = kendoassembly.GetName().Version;
+    var kendover = string.Format("{0}.{1}.{2}", kendoassemblyver.Major, kendoassemblyver.Minor, kendoassemblyver.Build);
+    var kendotheme = TCAdmin.SDK.Web.MVC.Template.GetTemplateSetting("CustomTheme.KendoTheme");
+    if (string.IsNullOrEmpty(kendotheme))
+    {
+        kendotheme = "kendo.default.min.css";
+    }
+
+
+    <link href="~/Content/kendo/@(kendover)/kendo.common.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/kendo/@(kendover)/@(kendotheme)" rel="stylesheet" type="text/css" />
+    @Styles.Render(this.GetTemplateFileUrl("ThemeBuilder.css", true))
+    @Styles.Render(this.GetTemplateFileUrl("Shared/_Header.css", true))
+    @Styles.Render(this.GetTemplateFileUrl("Template.css", true))
+    @Styles.Render(this.GetTemplateFileUrl("FontIcons.css", true))
+
+    var customcss = string.Format("~/Views/{0}/Custom.css", TCAdmin.SDK.Web.MVC.Template.GetSelectedTemplate());
+    if (System.IO.File.Exists(Server.MapPath(customcss)))
+    {
+        @Styles.Render(this.GetTemplateFileUrl(customcss, true));
+    }
+
+    @Scripts.Render(this.GetTemplateFileUrl("../../Scripts/Scripts.js", true))
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/3rdParty/hammerjs/hammer.js")
+    <script src="~/Scripts/kendo/@(kendover)/kendo.all.min.js"></script>
+    <script src="~/Scripts/kendo/@(kendover)/jszip.min.js"></script>
+    <script src="~/Scripts/kendo/@(kendover)/kendo.aspnetmvc.min.js"></script>
+
+    var templatejs = string.Format("~/Views/{0}/Template.js", TCAdmin.SDK.Web.MVC.Template.GetSelectedTemplate());
+    if (System.IO.File.Exists(Server.MapPath(templatejs)))
+    {
+        @Scripts.Render(this.GetTemplateFileUrl(templatejs, true));
+    }
+    var customjs = string.Format("~/Views/{0}/Custom.js", TCAdmin.SDK.Web.MVC.Template.GetSelectedTemplate());
+    if (System.IO.File.Exists(Server.MapPath(customjs)))
+    {
+        @Scripts.Render(this.GetTemplateFileUrl(customjs, true));
+    }
+
+}
+<script type="text/javascript">
+    TCAdmin.Config.Initialize();
+</script>
+
+@* Avoiding flickering in jquery while applying css https://monc.se/kitchen/152/avoiding-flickering-in-jquery/ *@
+<script>
+    var is_chrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
+
+    if (is_chrome) {
+        document.write('<style type="text/css">body{display:none}</style>');
+    }
+    $(function () {
+        if (is_chrome) {
+            $('body').css('display', 'block');
+        }
+
+        $('.title-mobile').parent().textfill({ maxFontPixels: 20 });
+    });
+</script>

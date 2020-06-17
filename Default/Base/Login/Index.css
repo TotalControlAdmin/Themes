@@ -1,0 +1,63 @@
+﻿#loginSection {
+    bottom: 45%;
+    height: 325px;
+    left: 0;
+    margin: auto;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 350px;
+}
+
+#loginSection .frame
+{
+    border: 1px solid #DEDFDE;
+    padding: 20px 0 20px 45px;
+}
+
+#loginSection .k-dropdown,
+#loginSection .k-textbox {
+    width: 250px;
+}
+
+#loginSection input[type="submit"],
+#loginSection input[type="button"],
+#loginSection button {
+    width: auto;
+}
+
+#loginSection input[type="checkbox"] {
+    width: 16px;
+}
+
+#loginSection .logo 
+{
+    width: 250px;
+    margin-bottom: 10px;
+}
+
+#loginSection .recover
+{
+    display:block;
+    margin-top: 10px;
+}
+
+#loginSection .field-validation-error {
+    display: block;
+}
+
+#loginSection .validation-summary-errors ul {
+    margin: 0;
+    padding: 0;
+}
+
+#loginSection .validation-summary-errors li {
+    display: inline;
+    list-style: none;
+    margin: 0;
+}
+
+.builtInCaptcha br:nth-of-type(2),
+.builtInCaptcha br:first-of-type {
+    display: none;
+}

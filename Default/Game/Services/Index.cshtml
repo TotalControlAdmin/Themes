@@ -1,0 +1,31 @@
+﻿@model Models.Game.ServicesModel
+
+@{
+    Layout = this.GetTemplateFile("Shared/MainSingle.cshtml", true);
+}
+
+@section head{
+    @Styles.Render("~/Content/grid.css")
+}
+
+@*@section sidebar{
+@Html.Partial(this.GetTemplateFile("Shared/_GridSettings.cshtml"), this.Model.GridSettings)
+}*@
+
+@Html.Partial(this.GetTemplateFile("Shared/_Grid.cshtml"), this.Model)
+
+<script>
+    function OnDataBound(e) {
+        $('#Grid tbody > tr').click(OnRowClick);
+    }
+
+    function OnRowClick(e) {
+        if ($(e.target).prop("tagName") == "A") {
+            return;
+        }
+
+        var grid = $("#Grid").data("kendoGrid");
+        var data = grid.dataItem($(e.currentTarget).closest("tr"));
+        window.location.href = "@Url.Action("Home", "Service")/" + data.ServiceId;
+    }
+</script>

@@ -1,0 +1,146 @@
+﻿@using CaptchaMvc.HtmlHelpers
+@model Models.Base.LoginModel
+
+@{
+    ViewBag.Title = Resources.Base.Login.TitleLogin;
+    Layout = this.GetTemplateFile("Shared/Simple.cshtml", true);
+}
+
+@section head{
+    @Styles.Render(this.GetTemplateFileUrl("Base/Login/Index.css", true))
+}
+
+<section id="loginSection">
+    <div class="frame">
+        <img class="logo" src="@Url.Content(this.GetTemplateLogo(false))" />
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+            @Html.EncryptedHiddenFor(m => m.RequireToken)
+            <fieldset class="auto-focus">
+                <ul>
+                    <li>
+                        @Html.LabelFor(m => m.UserName)
+                    </li>
+                    <li>
+                        @if (Model.RequireToken)
+                        {
+                            @(Html.Kendo().TextBoxFor(m => m.UserName)
+                                .HtmlAttributes(new { @readonly = string.Empty }))
+                        }
+                        else
+                        {
+                            @(Html.Kendo().TextBoxFor(m => m.UserName)
+                                .Value(string.IsNullOrEmpty(Model.UserName) ? TCAdmin.SDK.Web.Session.GetSavedUserName() : Model.UserName))
+
+                        }
+                        @Html.ValidationMessageFor(m => m.UserName)
+                    </li>
+                    @if (!Model.RequireToken)
+                    {
+                        <li>
+                            @Html.LabelFor(m => m.Password)
+                        </li>
+                        <li>
+                            @(Html.Kendo().TextBoxFor(m => m.Password)
+                                .HtmlAttributes(new { type = "password" })
+                                .Value(Model.Password))
+                            @Html.ValidationMessageFor(m => m.Password)
+                        </li>
+                        if (Model.Captcha == TCAdmin.SDK.Security.CaptchaType.ReCaptcha)
+                        {
+                            <script src='https://www.google.com/recaptcha/api.js'></script>
+                            <li>
+                                <div class="g-recaptcha" style="display:inline-block;" data-sitekey="@Model.CaptchaPublicKey" id="recaptcha"></div>
+                            </li>
+                        }
+                        if (Model.Captcha == TCAdmin.SDK.Security.CaptchaType.BuiltIn)
+                        {
+                            <li class="builtInCaptcha">
+                                @Html.Captcha(string.Empty, Resources.Base.Login.CaptchaCode, 6)
+                            </li>
+                        }
+                    }
+                    @if (Model.RequireToken)
+                    {
+                        <li>
+                            @Html.EncryptedHiddenFor(m => m.Password)
+                            @Html.LabelFor(m => m.Token)
+                        </li>
+                        <li>
+                            @(Html.Kendo().TextBoxFor(m => m.Token)
+                            .HtmlAttributes(new { type = "number", pattern = "[0-9]*" }))
+                        </li>
+                    }
+                    <li>
+                        @Html.LabelFor(m => m.Language)
+                    </li>
+                    <li>
+                        @(Html.Kendo().DropDownListFor(m => m.Language)
+                            .BindTo(Model.LanguageList))
+                        @Html.ValidationMessageFor(m => m.Language)
+                    </li>
+                    @if (!Model.HideTemplates)
+                    {
+                        <li>
+                            @Html.LabelFor(m => m.Template)
+                        </li>
+                        <li>
+                            @(Html.Kendo().DropDownListFor(m => m.Template)
+                            .BindTo(Model.TemplateList))
+                            @Html.ValidationMessageFor(m => m.Template)
+                        </li>
+                    }
+                    <li>
+                        @Html.Kendo().CheckBoxFor(m => m.RememberMe)
+                    </li>
+                    <li>
+                        @Html.ValidationSummary(true)
+                    </li>
+                </ul>
+            </fieldset>
+            <div style="text-align:center;margin-left:-45px;">
+                @(Html.Kendo().Button()
+                .Name("loginButton")
+                .Icon("lock")
+                .HtmlAttributes( new {type = "submit", @class = "k-primary" } )
+                .Content(Resources.Base.Login.LoginButton))
+
+                @Html.ActionLink(Resources.Base.Login.ForgotYourPassword, "PasswordRecovery", null, new { @class = "recover" })
+            </div>
+        }
+    </div>
+</section>
+
+<script>
+    $("#Template").change(function () {
+        window.location.href = replaceUrlParam(window.location.href, "template", $("#Template").val());
+    })
+
+    $("#Language").change(function () {
+        createCookie("__TCAdmin2Language", $("#Language").val());
+        window.location.href = window.location.href;
+    })
+
+    function replaceUrlParam(url, paramName, paramValue) {
+        if (paramValue == null) {
+            paramValue = '';
+        }
+        var pattern = new RegExp('\\b(' + paramName + '=).*?(&|#|$)');
+        if (url.search(pattern) >= 0) {
+            return url.replace(pattern, '$1' + paramValue + '$2');
+        }
+        url = url.replace(/[?#]$/, '');
+        return url + (url.indexOf('?') > 0 ? '&' : '?') + paramName + '=' + paramValue;
+    }
+
+
+    @if (Model.AutoSubmit)
+    {
+        <text>
+        $(document).ready(function () {
+            $('#loginButton').trigger("click");
+        });
+        </text>
+    }
+</script>

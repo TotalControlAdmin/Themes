@@ -1,0 +1,98 @@
+﻿.k-filemanager {
+    height: 100% !important;
+    position: relative;
+}
+
+.k-filemanager-content-container {
+    height: 100% !important;
+    min-height: 450px;
+}
+
+.k-filemanager-view {
+    height: 100% !important;
+}
+
+
+.k-animation-container,
+.k-split-wrapper {
+    z-index: 10050 !important;
+}
+
+.k-split-container > li > .k-button:focus:focus,
+.k-split-container > li > .k-button:focus:hover {
+    box-shadow: 0 0 2px 1px transparent;
+    border-color: transparent;
+}
+
+.k-window-content {
+    overflow: hidden;
+}
+
+.k-window-content > textarea {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.k-window-title {
+    margin-right: 80px;
+    line-height: unset;
+}
+
+/*editor window icon*/
+.k-window-title::before {
+    font: 17px/1 WebComponentsIcons;
+    padding-right: 2px;
+}
+
+
+.k-dialog.k-prompt .k-dialog-content {
+    display: none;
+}
+
+/* icon colors */
+.k-i-folder-add:before,
+.k-i-folder:before {
+    color: #d7ab69;
+}
+
+.k-i-upload:before {
+    color: green;
+}
+
+.k-i-file-add:before {
+    color: white;
+}
+
+.k-i-file-zip:before {
+    color: darkorange;
+}
+
+.k-i-file-txt:before {
+    color: royalblue;
+}
+
+.k-i-file-config:before {
+    color: darkred;
+}
+
+.k-i-file:before {
+    color: darkcyan;
+}
+
+.k-i-file-programming:before {
+    color: darkgreen;
+}
+
+.k-filemanager-grid {
+    height: 100% !important;
+}
+
+.k-grid-content {
+    height: 100% !important;
+    overflow-y: hidden;
+}
+
+.k-filemanager-view-grid {
+    overflow: visible;
+}

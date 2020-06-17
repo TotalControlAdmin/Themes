@@ -1,0 +1,162 @@
+﻿/* This file is used to create ThemeBuilder.css when the theme is saved. It should only contain css to affects colors. */
+/* If your theme uses a different css make a copy of this file and place it in your theme's folder                     */
+
+BODY {
+    background-color: %MVC.Body.Background.Color%;
+    color: %MVC.Body.Color%;
+}
+
+#main .header-text {
+    background-color: %MVC.Primary.Background.Color%;
+    color: %MVC.Primary.Color%;
+}
+
+#sidebar fieldset:first-of-type legend {
+    background-color: %MVC.Primary.Background.Color%;
+    color: %MVC.Primary.Color%;
+}
+
+a:link, a:visited {
+    color: %MVC.HyperLink.Color%;
+}
+
+a:active, a:hover {
+    color: %MVC.HyperLink.Hover.Color%;
+}
+
+.nav-fostrap li:hover {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+    .nav-fostrap li:hover > a {
+        color: %MVC.Menu.Hover.Color%;
+    }
+
+.nav-fostrap li > a {
+    color: %MVC.Menu.Color%;
+}
+
+.nav-fostrap li ul.dropdown {
+    background-color: %MVC.Secondary.Background.Color%;
+    border-color: %MVC.Secondary.Background.Color%;
+}
+
+    .nav-fostrap li ul.dropdown li a {
+        color: %MVC.Secondary.Color%;
+    }
+
+    .nav-fostrap li ul.dropdown li:hover {
+        background-color: %MVC.Primary.Background.Color%;
+    }
+
+        .nav-fostrap li ul.dropdown li:hover a {
+            color: %MVC.Primary.Color%;
+        }
+
+#sidebar > .links a:hover {
+    background-color: %MVC.SideBar.Icon.Hover.Color%;
+    border: 1px solid %MVC.Primary.Background.Color%;
+}
+
+.info-button:hover,
+.info-button {
+    background-color: %MVC.Information.Background.Color%;
+    color: %MVC.Information.Text.Color%;
+    background-image: unset;
+}
+
+.red-button:hover,
+.red-button {
+    background-color: %MVC.Error.Background.Color%;
+    color: %MVC.Error.Text.Color%;
+    background-image: unset;
+}
+
+.orange-button:hover,
+.orange-button {
+    background-color: %MVC.Warning.Background.Color%;
+    color: %MVC.Warning.Text.Color%;
+    background-image: unset;
+}
+
+.green-button:hover,
+.green-button {
+    background-color: %MVC.Success.Background.Color%;
+    color: %MVC.Success.Text.Color%;
+    background-image: unset;
+}
+
+.info-label {
+    color: %MVC.Information.Label.Color%;
+}
+
+.red-label {
+    color: %MVC.Error.Label.Color%;
+}
+
+.green-label {
+    color: %MVC.Success.Label.Color%;
+}
+
+.orange-label {
+    color: %MVC.Warning.Label.Color%;
+}
+
+.popup-script-loading-success {
+    color: %MVC.Success.Label.Color%;
+}
+
+.popup-script-loading-failure {
+    color: %MVC.Error.Label.Color%;
+}
+
+.k-i-cancel:before {
+    color: %MVC.Error.Label.Color%;
+}
+
+.k-i-save:before {
+    color: %MVC.Success.Label.Color%;
+}
+
+.k-i-unlock:before,
+.k-i-lock:before {
+    color: %MVC.Success.Label.Color%;
+}
+
+.field-validation-error {
+    color: %MVC.Error.Label.Color%;
+}
+
+.validation-summary-errors {
+    color: %MVC.Error.Label.Color%;
+}
+
+#sidebar fieldset legend {
+    border-bottom: 1px solid %MVC.Secondary.Background.Color%;
+}
+
+#footer #info {
+    border-top: 1px solid %MVC.Secondary.Background.Color%;
+}
+
+.navbar-fostrap > img,
+.logo {
+    filter: %MVC.Logo.Filter.Color.Active%;
+}
+
+@media only screen and (max-width:900px) {
+    .nav-fostrap,
+    .nav-bg-fostrap {
+        background-color: %MVC.Body.Background.Color%;
+    }
+
+        .nav-bg-fostrap .title-mobile {
+            color: %MVC.Body.Color%;
+        }
+
+    #sidebar ul,
+    #sidebar {
+        background-color: %MVC.Body.Background.Color%;
+    }
+}

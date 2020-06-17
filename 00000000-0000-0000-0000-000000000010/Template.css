@@ -1,0 +1,203 @@
+@import url("../Default/Template.css");
+
+@media only screen and (min-width:901px) {
+    #header .logo {
+        vertical-align: middle;
+        margin: 5px 5px 5px 5px;
+        max-height: 65px;
+        max-width: 230px;
+        position: absolute;
+        z-index: 2000;
+    }
+
+    .nav-fostrap {
+        width: 260px !important;
+        left: 0px !important;
+    }
+
+        .nav-fostrap::before {
+            content: "";
+            float: left;
+            margin-top: -16px;
+            width: 245px;
+            margin-left: 10px;
+        }
+
+    #footer #info {
+        margin-left: 260px !important;
+    }
+
+    #main .header-text {
+        margin: 0 5px 0px 10px;
+        padding: 4px 4px 4px 0px;
+        font-size: 16px;
+        font-weight: normal;
+        border-right: 1px solid;
+        border-top: 1px solid;
+        border-bottom: 1px solid;
+    }
+
+    #sidebar fieldset:first-of-type legend {
+        margin: 0 5px 0px 5px;
+        padding: 4px 4px 4px 10px;
+        font-size: 16px;
+        font-weight: normal;
+        border-left: 1px solid;
+        border-top: 1px solid;
+        border-bottom: 1px solid;
+    }
+
+    #sidebar fieldset legend {
+        padding: 4px 0 4px 0px;
+        margin-left: 15px;
+    }
+
+    #header .search-container {
+        top: 10px;
+        z-index: 1;
+        right: 6px;
+        visibility:hidden;
+    }
+
+    #header .template-switcher-container {
+        position: absolute;
+        top: inherit;
+        bottom: 0;
+        right: 20px;
+        z-index: 1000;
+    }
+
+    .nav-fostrap .search-container {
+        display: inline-block !important;
+        top: 100px !important;
+        right: unset !important;
+        left: 10px;
+        visibility: visible !important;
+    }
+
+        .nav-fostrap .search-container > span {
+            width: 245px !important;
+        }
+
+    #header .logo-container {
+        position: relative;
+        height: 65px;
+        overflow: hidden;
+    }
+
+    .nav-fostrap {
+        width: 200px;
+        height: 100%;
+        display: block;
+        position: absolute;
+        left: -200px;
+        top: 0px;
+        margin: 0;
+        border: 0;
+        border-radius: 0;
+        overflow-y: visible;
+        overflow-x: hidden;
+        z-index: 1100;
+        overflow: visible;
+    }
+
+    .nav-bg-fostrap .fixed-top {
+        display: none;
+    }
+
+    #sidebar {
+        margin-left: 260px;
+        width: unset;
+        min-width: 275px;
+    }
+
+    .navbar-fostrap {
+        display: none;
+    }
+
+        .navbar-fostrap span:nth-child(2) {
+            width: 20px;
+        }
+
+        .navbar-fostrap span:nth-child(3) {
+            width: 20px;
+        }
+
+    .nav-fostrap li {
+        display: block;
+    }
+
+        .nav-fostrap li a {
+            display: block;
+            padding: 15px;
+        }
+
+        .nav-fostrap li:first-child:hover a {
+            border-radius: 0;
+        }
+
+        .nav-fostrap li ul.dropdown {
+            position: relative;
+        }
+
+            .nav-fostrap li ul.dropdown li a {
+                border-bottom: none;
+            }
+
+            .nav-fostrap li ul.dropdown li a {
+                padding: 10px 10px 10px 30px;
+            }
+
+        .nav-fostrap li:hover .arrow-down {
+            border-top: 5px solid #fff;
+        }
+
+    .nav-fostrap .arrow-down {
+        border-top: 5px solid #505050;
+        position: absolute;
+        top: 20px;
+        right: 10px;
+    }
+
+    .nav-fostrap .cover-bg {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+
+    li > ul.dropdown {
+        width: 241px !important;
+        margin-left: 10px;
+    }
+
+    li.manual-hover > ul.dropdown {
+        display: block;
+    }
+
+    .nav-fostrap > ul {
+        padding-top: 35px;
+        margin: 96px 0 0 0;
+    }
+
+    #breadcrumb {
+        position: absolute;
+        top: 17px;
+        left: 265px;
+        right: 11px;
+    }
+
+    #serviceicons > ul {
+        white-space: nowrap;
+    }
+
+    #main .detail {
+        margin-right: 6px !important;
+    }
+}
+
+#sidebar > .links img {
+    height: unset;
+    width: 26px;
+}

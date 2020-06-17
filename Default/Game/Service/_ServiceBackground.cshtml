@@ -1,0 +1,15 @@
+﻿@* This has been replaced with Shared/_Background.cshtml *@
+@*@model Models.Game.ServiceModel
+
+<style>
+    @if (!string.IsNullOrEmpty(Model.BackgroundImage))
+    {
+        <text>
+            body {
+                background-image: linear-gradient(to left, rgba(255,255,255,0) -100%, rgba(255,255,255,1)), url(@this.GetTemplateFileUrl(Model.BackgroundImage));
+                background-size: cover;
+                background-attachment: fixed;
+            }
+        </text>
+    }
+</style>*@

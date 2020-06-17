@@ -1,0 +1,46 @@
+﻿@model Models.Base.TwoStepVerificationModel
+
+
+@using (Ajax.BeginForm("_TwoStepVerification", "AccountSecurity", new AjaxOptions { OnSuccess = "TCAdmin.Ajax.HandleAjaxResult", OnFailure = "TCAdmin.Ajax.HandleAjaxFailure" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.VerificationSecret)
+    @Html.HiddenFor(m => m.VerificationKey)
+    <fieldset class="fieldset-form auto-focus">
+        @Html.ValidationSummary(true)
+        <dl>
+            <dt></dt>
+            <dd>@Html.Kendo().CheckBoxFor(m => m.EnableTwoStep)</dd>
+            <dt></dt>
+            <dd>@Html.Kendo().CheckBoxFor(m => m.EnableTwoStepFtp)</dd>
+            <dt></dt>
+            <dd>@Html.Kendo().CheckBoxFor(m => m.DisableTwoStepIpLoggedInToPanel)</dd>
+            <dt>@Html.LabelFor(m => m.VerificationKey)</dt>
+            <dd>@Html.DisplayFor(m => m.VerificationKey)</dd>
+            <dt></dt>
+            <dd><img src="@ViewData["QrCode"]" /></dd>
+            <dt>@Html.LabelFor(m => m.GeneratedToken)</dt>
+            <dd>@Html.Kendo().TextBoxFor(m => m.GeneratedToken)@Html.ValidationMessageFor(m => m.GeneratedToken)</dd>
+        </dl>
+        <div class="main-button-group">
+            @(Html.Kendo().Button()
+                .Name("saveTwoStep")
+                .Icon("save")
+                .HtmlAttributes( new {type = "submit", @class = "k-primary" } )
+                .Content(Resources.Global.SaveChanges))
+
+            @(Html.Kendo().Button()
+                .Name("cancelTwoStep")
+                .Icon("cancel")
+                .HtmlAttributes(new { type = "button" })
+                .Content(Resources.Global.Cancel)
+                .Events(e=>e.Click("CancelTwoStepClick")))
+        </div>
+    </fieldset>
+}
+
+<script type="text/javascript">
+    function CancelTwoStepClick() {
+        window.location.href='@this.GetParentUrl()';
+    }
+</script>

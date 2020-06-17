@@ -1,0 +1,415 @@
+﻿html 
+{
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    height: 100%;
+    font-size: 16px;
+    font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    outline: none;
+    padding-left: 3px;
+    padding-right: 3px;
+    text-decoration: none;
+}
+
+a:link, a:visited,
+a:active, a:hover {
+
+}
+
+#sidebar a:hover {
+    text-decoration: underline;
+}
+
+#aspxcontent {
+    width: 1px;
+    min-width: 100%;
+    border: 0;
+}
+
+/* Forms
+----------------------------------*/
+fieldset {
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+fieldset legend
+{
+    display: block;
+    font-size: 16px;
+    padding-bottom: 5px;
+}
+
+fieldset ul {
+    padding: 0;
+    list-style: none;
+}
+
+fieldset ul li {
+    padding-bottom: 5px;
+}
+
+label {
+    font-size: 16px;
+}
+
+dd a,
+dd label {
+    font-size: 1.3em;
+}
+
+dd label.k-checkbox-label {
+    font-size: 16px;
+}
+
+label.checkbox {
+    display: inline;
+}
+
+.k-dropdown,
+.k-textbox,
+input, textarea {
+    margin: 3px 0 4px 0;
+    padding: 5px;
+    width: 300px;
+}
+
+.k-textbox {
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+textarea {
+    background-color: rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid transparent !important;
+}
+
+textarea:hover {
+    background-color: transparent !important;
+    border: 1px solid rgba(0, 0, 0, 0.15) !important;
+}
+
+select 
+{
+    margin: 6px 0 6px 0;
+    padding: 5px 5px 5px 0;
+    max-width: 312px;
+}
+
+/* Styles for validation helpers
+----------------------------------*/
+#main .field-validation-error {
+    margin-bottom: 5px;
+    display: block;
+}
+
+.field-validation-valid {
+    display: none;
+}
+
+.validation-summary-errors {
+    font-size: 1.1em;
+}
+
+.validation-summary-valid {
+    display: none;
+}
+
+.clear-both
+{
+    clear:both;
+}
+
+/* Main.master
+----------------------------------*/
+#wrapper {
+    min-height: 100%;
+    position: relative;
+}
+
+.push 
+{
+    margin-top: 10px;
+    padding-bottom: 35px; /* same as #footer height */
+}
+
+#content
+{
+    padding: 1px 0 0 0;
+}
+
+#main
+{
+    overflow:hidden;
+}
+
+#main .header 
+{
+    margin: 0 0 10px 0;
+}
+
+#main .header-text {
+    margin: 0 0 1px 0;
+    padding: 4px 4px 4px 10px;
+    font-size: 16px;
+    font-weight: normal;
+}
+
+#main .detail 
+{
+    margin: 0 10px 0px 10px;
+    min-height:500px;
+}
+
+#main .fieldset-form
+{
+    display: inline-block;
+}
+
+#main .fieldset-form dl
+{
+    margin: 0;
+}
+
+#main .fieldset-form dl dt
+{
+    line-height: 1.2em;
+    margin: 5px 0 0 0;
+}
+
+#main .fieldset-form dl dd
+{
+    margin: 0;
+}
+
+#main .fieldset-form ul
+{
+    margin: 0;
+}
+
+#main .fieldset-form li
+{
+    vertical-align: top;
+    display: inline-block;
+    margin: 0 50px 0 0;
+    padding: 0;
+}
+
+#sidebar
+{
+    width:275px;
+    float:left;
+    padding-right:10px;
+}
+
+#sidebar fieldset
+{
+    padding: 1px 0 5px 0px;
+}
+
+#sidebar fieldset:first-of-type legend {
+    border: 0;
+}
+
+#sidebar fieldset legend {
+    width: 100%;
+    padding: 4px 0 4px 15px;
+}
+
+#sidebar fieldset:first-of-type ul {
+    /*border-top: 2px solid #004c83;*/
+}
+
+#sidebar fieldset ul {
+    margin: 0 0 5px;
+    padding: 10px 0 5px 15px;
+    font-size: 16px;
+}
+
+#sidebar label {
+    font-size: 16px;
+}
+
+#sidebar .links li {
+    padding-bottom: 5px;
+}
+
+#sidebar > .links a {
+    display: block;
+    padding: 3px 0;
+    border: 1px solid transparent;
+}
+
+#sidebar > .links img {
+    border: 0;
+    padding: 0 3px 0 3px;
+    float: left;
+    position: relative;
+    height: 32px;
+}
+
+#sidebar > .links div {
+    min-height: 32px;
+    margin-left: 32px;
+}
+
+#sidebar > .links span {
+    line-height: 32px;
+    margin-left: 10px;
+}
+
+#sidebar > .links a:hover 
+{
+    text-decoration: none;
+}
+
+#sidebar input
+{
+    width:auto;
+    font-size: 16px;
+}
+
+#footer 
+{
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    height: 35px;
+}
+
+#footer #info
+{
+    text-align: center;
+    vertical-align: middle;
+    padding-top: 8px;
+    margin: 0 20px;
+}
+
+#main .fieldset-form .main-button-group
+{
+    padding: 25px 0 0 0;
+    text-align: center;
+}
+
+#main .fieldset-form .main-button-group-left {
+    padding: 25px 0 0 0;
+    text-align: left;
+}
+
+/* Buttons
+----------------------------------*/
+/* no text */
+.small-icon-button
+{
+}
+
+/* icon & text */
+.link-button {
+    border-width: 1px;
+    border-style: solid;
+    padding: 6px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.link-button:hover {
+    text-decoration: none;
+}
+
+.normal-icon-button {
+    padding: 7px 7px 7px 2px;
+}
+
+.normal-icon-button .ui-button-text
+{
+    padding: 0.4em 1em 0.4em 2.5em;
+    font-size: 16px;
+    line-height: 1.2em;
+}
+
+.normal-icon-button .ui-button-icon-primary
+{
+    margin-top: -13px;
+    width: 24px;
+    height: 24px;
+}
+
+.red-label {
+    font-weight: bold;
+}
+
+.green-label {
+    font-weight: bold;
+}
+
+.orange-label {
+    font-weight: bold;
+}
+
+.ui-custom-icon-search { background-position: -160px -112px; }
+
+
+/* Remove numeric spinners
+----------------------------------*/
+#loginSection input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+#loginSection input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+#FastDownloadLink {
+    max-width: 275px;
+    text-overflow: ellipsis;
+    display: block;
+    overflow: hidden;
+}
+
+.confirm-container {
+    min-width: 330px
+}
+
+.confirm-container > span {
+    display: block;
+    text-align: center;
+}
+
+.popup-script-loading {
+    float: left;
+    width: 50px;
+    height: 50px;
+    position: relative;
+    padding-left: 30px;
+}
+
+.popup-script-loading-success {
+    font-size: 55px;
+}
+
+.popup-script-loading-failure {
+    font-size: 55px;
+}
+
+.popup-script-output {
+    width: 500px;
+    min-height: 55px;
+    margin-left: 100px;
+    line-height: 52px;
+}
+
+.k-alert {
+    z-index: 1000000000 !important;
+}

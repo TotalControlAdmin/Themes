@@ -1,0 +1,52 @@
+﻿@model TCAdmin.SDK.Web.MVC.Models.GridSettings
+
+@if (Model.EnableNew | Model.EnableRefresh | Model.CustomOptionLinks.Count > 0)
+{
+    <text>
+    <fieldset class="links">
+        <legend>@Resources.Grid.Manage</legend>
+        <ul>
+            @foreach (var link in Model.CustomOptionLinks) { <li><a href="@link.Url">@this.LinkIcon(@link.Icon)@link.Text</a></li> }
+            @if (Model.EnableNew) {<li><a href="">@this.LinkIcon(Model.NewIcon)@Model.NewText</a></li>}
+            @if (Model.EnableRefresh) {<li><a href="#" onclick="refresh();return false;">@this.LinkIcon("Images/ControlPanel/Icons/Refresh24x24.png")@Resources.Grid.Refresh</a></li>}
+        </ul>
+    </fieldset>
+    </text>
+}
+
+@*@if (Model.EnableExport)
+{
+    <text>
+    <fieldset class="links">
+        <legend>@Resources.Grid.ExportTo</legend>
+        <ul>
+            <!--<li><a>@LinkIcon("Images/ControlPanel/Icons/Text16x16.gif")@Resources.Grid.Text</a></li>-->
+            <li><a href="#" onclick="excel(); return false;">@LinkIcon("Images/ControlPanel/Icons/Excel16x16.gif")@Resources.Grid.Excel</a></li>
+            <!--<li><a>@LinkIcon("Images/ControlPanel/Icons/Word16x16.gif")@Resources.Grid.Word</a></li>-->
+        </ul>
+    </fieldset>
+    </text>
+}
+@if (Model.EnableSettings)
+{
+    <text>
+    <fieldset class="links">
+        <legend>@Resources.Grid.GridSettings</legend>
+        <ul>
+            <li><a>@LinkIcon("Images/ControlPanel/Icons/Grid16x16.png")@Resources.Grid.ConfigureColumns</a></li>
+            <li><a>@LinkIcon("Images/ControlPanel/Icons/Save16x16.png")@Resources.Grid.SaveLayout</a></li>
+            <li><a>@LinkIcon("Images/ControlPanel/Icons/Refresh16x16.png")@Resources.Grid.ResetSettings</a></li>
+        </ul>
+    </fieldset>
+    </text>
+}*@
+
+<script type="text/javascript">
+    function refresh() {
+        $("#@this.Model.Name").data("kendoGrid").dataSource.read();
+    }
+
+    function excel() {
+        $("#@this.Model.Name").data("kendoGrid").saveAsExcel();
+    }
+</script>

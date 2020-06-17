@@ -1,0 +1,46 @@
+﻿@model Models.Base.AspxModel
+@{
+    Layout = this.GetTemplateFile("Shared/Main.cshtml", true);
+}
+
+@section head{
+    <script src="~/3rdParty/iframeResizer/iframeResizer.min.js"></script>
+    <style type="text/css">
+        #main .detail {
+            margin: 0;
+        }
+    </style>
+}
+
+@section sidebar{
+    @Html.Partial("_DefaultSidebar")
+}
+
+<iframe id="aspxcontent" src="@Url.Content(Model.Url)" scrolling="no" style="visibility:hidden;min-height:100px;"></iframe>
+<script>
+    $(document).ready(function () {
+        if (!window.iframeHasLoaded) {
+            window.detailPosition = $(".detail").css("position");
+            setTimeout(function () {
+                if (!window.iframeHasLoaded) {
+                    $(".detail").css("position", "relative");
+                    kendo.ui.progress($(".detail"), true);
+                }
+            }, 200);
+        }
+    });
+window.iframeLoaded = function () {
+    window.iframeHasLoaded = true;
+    $('#aspxcontent').show();
+    $('#aspxcontent').css('visibility', 'visible');
+    $(window).scrollTop(0);
+    kendo.ui.progress($(".detail"), false);
+    $(".detail").css("position", window.detailPosition);
+}
+
+$('#aspxcontent').on('load', function () {
+iframeLoaded();
+})
+
+iFrameResize({ heightCalculationMethod: "lowestElement" }, '#aspxcontent')
+</script>

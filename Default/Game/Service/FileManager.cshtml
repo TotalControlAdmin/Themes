@@ -1,0 +1,875 @@
+﻿@model Models.Game.FileManager.FileManagerModel
+
+@{
+    Layout = this.GetTemplateFile("Shared/Main.cshtml", true);
+
+    var serviceid = Model.Service.ServiceId;
+
+    var ansi = System.Text.Encoding.GetEncoding(1252);
+    var unicode = System.Text.Encoding.Unicode;
+    var bigendian = System.Text.Encoding.BigEndianUnicode;
+    var utf7 = System.Text.Encoding.UTF7;
+    var utf8 = System.Text.Encoding.UTF8;
+    var utf32 = System.Text.Encoding.UTF32;
+
+    var isdark = TCAdmin.SDK.Web.MVC.Template.GetTemplateSetting("CustomTheme.Dark");
+    if (string.IsNullOrEmpty(isdark)) { isdark = "False"; }
+}
+
+@section head{
+    @Styles.Render(this.GetTemplateFileUrl("Game/Service/FileManager.css", true))
+    @Scripts.Render(this.GetTemplateFileUrl("Game/Service/FileManager.Defaults.js", true))
+}
+
+@section sidebar{
+    @Html.Action("_PageIcons", "Service", new { id = Model.Service.ServiceId })
+}
+
+
+<script id="preview-template-single" type="text/kendo-ui-template">
+    <div class="#=styles.fileInfo#">
+        <div class="#=styles.filePreview#">
+            <span class="k-file-icon k-icon k-i-#= !selection[0].isDirectory ? kendo.getFileGroup(selection[0].extension, true) : "folder" #"></span>
+        </div>
+        <span class="#=styles.fileName#">#=selection[0].name+selection[0].extension#</span>
+        #if(metaFields){#
+        <dl class="#=styles.fileMeta#">
+            #for(var i = 0; i < metaFields.length; i+=1){#
+            #var field = metaFields[i]#
+            #if(field=="size" & selection[0].isDirectory) {#
+            #} else {#
+            <dt class="#=styles.metaLabel#">#=messages[field]#:&nbsp;</dt>
+            <dd class="#=styles.metaValue# #=styles[field]#">
+                #if(field == "size"){#
+                #=kendo.getFileSizeMessage(selection[0][field])#
+                #} else if(selection[0][field] instanceof Date) {#
+                #=kendo.toString(selection[0][field], "G")#
+                #} else if(field == "extension") {#
+                #= !selection[0].isDirectory ? kendo.getFileGroup(selection[0].extension) : "folder"#
+                #} else {#
+                #=selection[0][field]#
+                #}#
+            </dd>
+            <dd class="k-line-break"></dd>
+            # } #
+            # } #
+        </dl>
+        #}#
+    </div>
+</script>
+<script id="preview-template-multiple" type="text/kendo-ui-template">
+    <div class="#=styles.fileInfo#">
+        <div class="#=styles.filePreview#">
+            <span class="k-file-icon k-icon k-i-file"></span>
+        </div>
+        <span class="#=styles.fileName#">
+            #=selection.length#
+            #=messages.items#
+        </span>
+    </div>
+</script>
+
+    @(Html.Kendo().FileManager().Name("filemanager")
+        .DataSource(ds =>
+        {
+            ds.Read(operation => operation
+                .Type(HttpVerbs.Post)
+                .Action("Read", "FileManager", new { id = serviceid })
+                    );
+            ds.Destroy(operation => operation
+                .Type(HttpVerbs.Post)
+                .Action("Destroy", "FileManager", new { id = serviceid })
+                );
+            ds.Create(operation => operation
+                .Type(HttpVerbs.Post)
+                .Action("CreateFolder", "FileManager", new { id = serviceid })
+                );
+            ds.Update(operation => operation
+                .Type(HttpVerbs.Post)
+                .Action("Update", "FileManager", new { id = serviceid })
+                );
+        })
+        .UploadUrl("UploadChunks", "FileManager", new { id = serviceid })
+        .Draggable(true)
+        .Upload(upload => upload.Directory(false).Multiple(true).Async(a=>a.ChunkSize(2 * 1024 * 1024).Concurrent(false).AutoUpload(true)).ShowFileList(true))
+        .Breadcrumb(true)
+        .Resizable(true)
+        .PreviewPane(p => p.SingleFileTemplateId("preview-template-single").MultipleFilesTemplateId("preview-template-multiple"))
+        .Events(e=>e.Error("OnFileManagerError").Drop("OnItemDrop"))
+        .Messages(m=>
+            m.Views(s=>s.DateCreatedField(Resources.Game.FileManager.DateCreated).DateModifiedField(Resources.Game.FileManager.DateModified).NameField(Resources.Game.FileManager.FileName).SizeField(Resources.Game.FileManager.FileSize).TypeField(Resources.Game.FileManager.FileType))
+            .PreviewPane(s => s.Created(Resources.Game.FileManager.DateCreated).Modified(Resources.Game.FileManager.DateModified).Size(Resources.Game.FileManager.FileSize).Extension(Resources.Game.FileManager.FileType).NoFileSelected(Resources.Game.FileManager.NoFileSelected))
+            .Toolbar(s=> s.CreateFolder(Resources.Game.FileManager.NewFolder).DateCreatedField(Resources.Game.FileManager.DateCreated).DateModifiedField(Resources.Game.FileManager.DateModified).SizeField(Resources.Game.FileManager.FileSize).NameField(Resources.Game.FileManager.FileName).TypeField(Resources.Game.FileManager.FileType).Delete(Resources.Game.FileManager.Delete).Details(Resources.Game.FileManager.Details).DetailsChecked(Resources.Game.FileManager.DetailsChecked).DetailsUnchecked(Resources.Game.FileManager.DetailsUnchecked).Rename(Resources.Game.FileManager.Rename).Search(Resources.Game.FileManager.Search).SortField(Resources.Game.FileManager.Sort))
+            .Dialogs(s=>
+                s.Upload(u=>u.Title(Resources.Game.FileManager.UploadFiles).Clear(Resources.Game.FileManager.Clear).Done(Resources.Game.FileManager.Done))
+                .MoveConfirm(c=>c.Content(Resources.Game.FileManager.MoveMessage).Cancel(Resources.Game.FileManager.Move).OkText(Resources.Game.FileManager.Copy).Title(Resources.Game.FileManager.Confirm))
+                .DeleteConfirm(d=>d.Title(Resources.Game.FileManager.Confirm).OkText(Resources.Game.FileManager.DeleteOk).Cancel(Resources.Game.FileManager.Cancel).Content(Resources.Game.FileManager.DeleteMessage))
+                .RenamePrompt(r=>r.Cancel(Resources.Game.FileManager.Cancel).OkText(Resources.Game.FileManager.Rename).Title(Resources.Game.FileManager.Confirm).Content(Resources.Game.FileManager.RenameFolderPrompt))
+            )
+        )
+        .Toolbar(tb => tb.Items(items =>
+        {
+            items.Add("createFolder").Type("button").Command("CreateFolderCommand").Icon("folder-add");
+            items.Add().Type("button").Command("CreateFileCommand").Icon("file-add").Text(Resources.Game.FileManager.NewFile);
+            if (Model.Settings.EnableUpload) { items.Add().Type("button").Command("OpenDialogCommand").Icon("upload").Options("{ \"type\": \"uploadDialog\" }").Text(Resources.Game.FileManager.Upload); }
+            items.Add("sortField");
+            items.Add("changeView");
+            items.Add("spacer");
+            items.Add("details");
+            items.Add("search");
+        })).Events(e=>e.Open("OnItemOpen").Drop("OnItemDrop").Navigate("OnNavigate"))
+    .ContextMenu(context => context.Items(items =>
+    {
+        items.Add("edit").Command("EditCommand").Text(Resources.Game.FileManager.Edit).SpriteCssClass("k-icon k-i-edit-tools");
+        items.Add("rename");
+        items.Add("compress").Command("CompressCommand").Text(Resources.Game.FileManager.Compress).SpriteCssClass("k-icon k-i-zip");
+        items.Add("extract").Command("ExtractCommand").Text(Resources.Game.FileManager.Extract).SpriteCssClass("k-icon k-i-aggregate-fields");
+        items.Add("download").Command("DownloadCommand").Text(Resources.Game.FileManager.Download).SpriteCssClass("k-icon k-i-download");
+        items.Add("delete");
+    }).Open("OnContextOpen"))
+    )
+
+    <script>
+    $(document).ready(function () {
+        $("#filemanager").parent().css("position", "relative");
+        PreLoadNextWindow();
+
+        var filemanager = $("#filemanager").getKendoFileManager();
+        configureFileManagerDefaults(filemanager);
+
+
+        //Add file extension on rename (grid)
+        $(".k-i-grid-layout").parent().bind('click', function () {
+            if (!filemanager.view().grid) {
+                setTimeout(function () {
+                    filemanager.view().grid.bind('edit', function () {
+                        var grid = filemanager.view().grid;
+                        var currentcel = grid.current();
+                        var row = $(currentcel).closest("tr");
+                        var item = grid.dataItem(row);
+                        filemanager._view.element.find(".k-textbox").val(item.name + item.extension);
+                    });
+                }, 0);
+            }
+        });
+    })
+
+    function EditCommand(e) {
+        var that = this,
+            filemanager = that.filemanager, // get the kendo.ui.FileManager instance
+            options = that.options // get the options passed through the tool
+            //target = options.target // options.target is available only when command is executed from the context menu
+
+        if (!filemanager.getSelected) {
+            filemanager = e.sender;
+        }
+
+        selectedFiles = filemanager.getSelected(); // get the selected files
+
+        //find existing window
+        var foundwindow = false;
+        EditorWindows.forEach(function (item, index) {
+            if (item.title() == selectedFiles[0].path) {
+                item.open();
+                item.restore();
+                item.toFront();
+                foundwindow = true;
+            }
+        });
+
+        if (foundwindow) {
+            return;
+        }
+
+        var editorwin = GetNewWindow();
+        var editor = editorwin.element;
+        var toolbar = editor.find("#filetoolbar");
+        var actions = editor.parent().find(".k-window-actions");
+        var iframe = editor.find("#ifilecontents");
+        var icontent = iframe.prop('contentWindow');
+
+        editorwin.setOptions({
+            title: selectedFiles[0].path,
+            width: 800,
+            minWidth: 430,
+            position: {
+                top: $("#filemanager").parent().position().top + $(".k-filemanager-header").innerHeight(),
+                left: $("#filemanager").parent().position().left + parseInt($("#filemanager").parent().css("marginLeft")) + 200
+            },
+            close: function () {
+                //don't destroy if minimized
+                var that = this;
+                if (that.isMinimized()) {
+                    return;
+                }
+                setTimeout(function () {
+                    var index = EditorWindows.indexOf(that);
+                    if (index > -1) {
+                        EditorWindows.splice(index, 1);
+                    }
+                    that.destroy();
+                    CreateOpenFiles();
+                }, 100);
+            },
+            minimize: function () {
+                editorwin.close();
+            }
+        });
+
+        window.scrollTo(0, 0);
+        editorwin.open();
+        kendo.ui.progress(editor.parent(), true);
+        icontent.CreateMirror();
+        //set window icon
+        editor.parent().find(".k-window-title").addClass("k-i-file-{0}".format(kendo.getFileGroup(selectedFiles[0].extension)));
+
+        //Handle escape in codemirror
+        icontent.Mirror.on("keyup", function (cm, e) {
+            if (e.key === "Escape") {
+                editorwin.close();
+            }
+        });
+
+        //Show open files
+        CreateOpenFiles()
+
+        var data = [
+            { text: "@ansi.EncodingName", value: "@ansi.CodePage" },
+            { text: "@unicode.EncodingName", value: "@unicode.CodePage" },
+            { text: "@bigendian.EncodingName", value: "@bigendian.CodePage" },
+            { text: "@utf7.EncodingName", value: "@utf7.CodePage" },
+            { text: "@utf8.EncodingName", value: "@utf8.CodePage" },
+            { text: "@utf32.EncodingName", value: "@utf32.CodePage" }
+        ];
+
+        // create DropDownList for encoding
+        var encoding = editor.find("#encoding");
+        encoding.kendoDropDownList({
+            dataTextField: "text",
+            dataValueField: "value",
+            dataSource: data,
+            index: 0
+        });
+
+        var encodinglist = encoding.data("kendoDropDownList");
+
+        //load file
+        $.ajax({
+            type: "POST",
+            url: "ReadText/@(Model.Service.ServiceId)",
+            data: JSON.stringify({ "entry": selectedFiles[0] }),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            error: function (e) {
+                editorwin.close();
+                OnError(e);
+            },
+            success: function (e) {
+                maxeditor = function () { iframe.css("height", editor.innerHeight() - toolbar.innerHeight() - 6); iframe.css("width", editor.innerWidth() - 0); }
+                maxeditor();
+                editorwin.bind("resize", maxeditor);
+
+                encodinglist.value(e.CodePage);
+                icontent.SetOption("theme", "@(bool.Parse(isdark)?"dracula":"default")");
+                icontent.SetContent(e.Contents, selectedFiles[0].path);
+
+                if (!e.CanWrite) {
+                    toolbar.hide();
+                    icontent.SetOption("readOnly", true);
+                }
+                kendo.ui.progress(editor.parent(), false);
+            }
+        });
+
+        //save file
+        editorwin.wrapper.find(".k-i-save").parent().click(function (e) {
+            kendo.ui.progress(editor.parent(), true);
+            $.ajax({
+                type: "POST",
+                url: "WriteText/@(Model.Service.ServiceId)",
+                data: JSON.stringify({ "entry": selectedFiles[0], "contents": icontent.GetContent(), "encoding": encodinglist.value() }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "text",
+                error: function (e) {
+                    OnError(e);
+                },
+                success: function (e) {
+                    editorwin.close();
+                }
+            });
+
+            e.preventDefault();
+        });
+
+        //refresh file
+        editorwin.wrapper.find(".k-i-refresh").parent().click(function (e) {
+            kendo.ui.progress(editor.parent(), true);
+
+            $.ajax({
+                type: "POST",
+                url: "ReadText/@(Model.Service.ServiceId)?path=" + selectedFiles[0].path,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                error: function (e) {
+                    kendo.ui.progress(editor.parent(), false);
+                    OnError(e);
+                },
+                success: function (e) {
+                    encodinglist.value(e.CodePage);
+                    icontent.SetContent(e.Contents);
+                    kendo.ui.progress(editor.parent(), false);
+                }
+            });
+
+            e.preventDefault();
+        });
+
+    }
+
+    var filemanagerNS = kendo.ui.filemanager;
+
+    //Add file extension on rename (listview)
+    filemanagerNS.commands.RenameCommand = filemanagerNS.FileManagerCommand.extend({
+        exec: function () {
+            var that = this, target = that.options.target, viewItem = that.filemanager._view.widgetComponent.dataItem(target);
+
+            if (target && viewItem) {
+                that.filemanager._view.edit(target);
+                that.filemanager._view.element.find(".k-textbox").val(viewItem.name + viewItem.extension);
+
+            } else {
+                that._renameTreeViewItem(target);
+            }
+        },
+        _renameTreeViewItem: function (target) {
+            var that = this, uid = target.data('uid'), item = that.filemanager.treeView.widgetComponent.dataSource.getByUid(uid), realItem = that.filemanager.dataSource.get(item.id);
+            that.filemanager._prompt({
+                type: 'rename',
+                defaultInput: realItem.name,
+                target: target
+            }).done(function (newName) {
+                realItem.set('name', newName);
+            });
+        }
+    });
+
+    filemanagerNS.commands.DeleteCommand = filemanagerNS.FileManagerCommand.extend({
+        exec: function () {
+            var that = this,
+                filemanager = that.filemanager, // get the kendo.ui.FileManager instance
+                options = that.options, // get the options passed through the tool
+                target = options.target // options.target is available only when command is executed from the context menu
+            selectedFiles = filemanager.getSelected(); // get the selected files
+
+            if (!selectedFiles)
+                return;
+
+            filemanager._confirm({
+                type: 'delete',
+                target: target
+            }).done(function () {
+                kendo.ui.progress($(".k-filemanager-view"), true);
+                $.ajax({
+                    type: "POST",
+                    url: "BatchDelete/@(Model.Service.ServiceId)",
+                    data: JSON.stringify({ "target": filemanager.path(), "entries": selectedFiles }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "text",
+                    error: function (e) {
+                        kendo.ui.progress($(".k-filemanager-view"), false);
+                        OnError(e);
+                    },
+                    success: function (e) {
+                        filemanager.refresh();
+                        kendo.ui.progress($(".k-filemanager-view"), false);
+                    }
+                });
+            });
+        }
+    });
+
+    filemanagerNS.commands.MoveCommand = filemanagerNS.FileManagerCommand.extend({
+        exec: function () {
+            var that = this,
+                filemanager = that.filemanager, // get the kendo.ui.FileManager instance
+                options = that.options, // get the options passed through the tool
+                target = options.target // options.target is available only when command is executed from the context menu
+            selectedFiles = filemanager.getSelected(); // get the selected files
+
+            kendo.ui.progress($(".k-filemanager-view"), true);
+
+            $.ajax({
+                type: "POST",
+                url: "Move/@(Model.Service.ServiceId)",
+                data: JSON.stringify({ "target": target, "entries": selectedFiles, "overwrite": options.overwrite }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "text",
+                error: function (e) {
+                    kendo.ui.progress($(".k-filemanager-view"), false);
+                    OnError(e);
+                },
+                success: function (e) {
+                    //refresh current view because files been moved.
+                    filemanager.refresh();
+                    //Force refresh of target on next navigation
+                    var fileitem = FindFileItem(target);
+                    if (fileitem) {
+                        var children = fileitem["function(e){return e||[]}"];
+                        if (children && children.length) {
+                            fileitem.dirty = true;
+                        }
+                    }
+                    kendo.ui.progress($(".k-filemanager-view"), false);
+                }
+            });
+        }
+    });
+    filemanagerNS.commands.CopyCommand = filemanagerNS.FileManagerCommand.extend({
+        exec: function () {
+            var that = this,
+                filemanager = that.filemanager, // get the kendo.ui.FileManager instance
+                options = that.options, // get the options passed through the tool
+                target = options.target // options.target is available only when command is executed from the context menu
+            selectedFiles = filemanager.getSelected(); // get the selected files
+
+            if (!selectedFiles)
+                return;
+
+            kendo.ui.progress($(".k-filemanager-view"), true);
+
+            $.ajax({
+                type: "POST",
+                url: "Copy/@(Model.Service.ServiceId)",
+                data: JSON.stringify({ "target": target, "entries": selectedFiles, "overwrite": options.overwrite }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "text",
+                error: function (e) {
+                    kendo.ui.progress($(".k-filemanager-view"), false);
+                    OnError(e);
+                },
+                success: function (e) {
+                    //Force refresh of target on next navigation
+                    var fileitem = FindFileItem(target);
+                    if (fileitem) {
+                        var filemanager = that.filemanager
+                        var children = fileitem["function(e){return e||[]}"];
+                        if (children && children.length) {
+                            fileitem.dirty = true;
+                        }
+                    }
+
+                    kendo.ui.progress($(".k-filemanager-view"), false);
+                }
+            });
+        }
+    });
+    filemanagerNS.commands.DownloadCommand = filemanagerNS.FileManagerCommand.extend({
+        exec: function () {
+            var that = this,
+                filemanager = that.filemanager, // get the kendo.ui.FileManager instance
+                options = that.options, // get the options passed through the tool
+                target = options.target // options.target is available only when command is executed from the context menu
+            selectedFiles = filemanager.getSelected(); // get the selected files
+            window.location = 'Download/@(Model.Service.ServiceId)?target=' + encodeURI(selectedFiles[0].path);
+        }
+    });
+    filemanagerNS.commands.CompressCommand = filemanagerNS.FileManagerCommand.extend({
+        exec: function () {
+            var that = this,
+                filemanager = that.filemanager, // get the kendo.ui.FileManager instance
+                options = that.options, // get the options passed through the tool
+                target = options.target // options.target is available only when command is executed from the context menu
+            selectedFiles = filemanager.getSelected(); // get the selected files
+
+            kendo.ui.progress($(".k-filemanager-view"), true);
+
+            $.ajax({
+                type: "POST",
+                url: "Compress/@(Model.Service.ServiceId)",
+                data: JSON.stringify({ "target": filemanager.path(), "entries": selectedFiles }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "text",
+                error: function (e) {
+                    kendo.ui.progress($(".k-filemanager-view"), false);
+                    OnError(e);
+                },
+                success: function (e) {
+                    filemanager.refresh();
+                    kendo.ui.progress($(".k-filemanager-view"), false);
+                }
+            });
+        }
+    });
+    filemanagerNS.commands.ExtractCommand = filemanagerNS.FileManagerCommand.extend({
+        exec: function () {
+            var that = this,
+                filemanager = that.filemanager, // get the kendo.ui.FileManager instance
+                options = that.options, // get the options passed through the tool
+                target = options.target // options.target is available only when command is executed from the context menu
+            selectedFiles = filemanager.getSelected(); // get the selected files
+
+            kendo.ui.progress($(".k-filemanager-view"), true);
+
+            $.ajax({
+                type: "POST",
+                url: "Extract/@(Model.Service.ServiceId)",
+                data: JSON.stringify({ "target": filemanager.path(), "entry": selectedFiles[0] }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "text",
+                error: function (e) {
+                    kendo.ui.progress($(".k-filemanager-view"), false);
+                    OnError(e);
+                },
+                success: function (e) {
+                    filemanager.refresh();
+                    kendo.ui.progress($(".k-filemanager-view"), false);
+                }
+            });
+        }
+    });
+    filemanagerNS.commands.CreateFolderCommand = filemanagerNS.FileManagerCommand.extend({
+        exec: function () {
+            var that = this,
+                filemanager = that.filemanager, // get the kendo.ui.FileManager instance
+                options = that.options, // get the options passed through the tool
+                target = options.target // options.target is available only when command is executed from the context menu
+
+            FileManagerPrompt("@Resources.Game.FileManager.NewFolderPrompt", "@Resources.Game.FileManager.NewFolder").then(function (data) {
+                kendo.ui.progress($(".k-filemanager-view"), true);
+
+                $.ajax({
+                    type: "POST",
+                    url: "CreateFolder/@(Model.Service.ServiceId)",
+                    data: JSON.stringify({ "target": filemanager.path(), "entry": { Name: data } }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "text",
+                    error: function (e) {
+                        kendo.ui.progress($(".k-filemanager-view"), false);
+                        OnError(e);
+                    },
+                    success: function (e) {
+                        filemanager.refresh();
+                        kendo.ui.progress($(".k-filemanager-view"), false);
+                    }
+                });
+            }, function () {
+                //cancel
+            })
+        }
+    });
+    filemanagerNS.commands.CreateFileCommand = filemanagerNS.FileManagerCommand.extend({
+        exec: function () {
+            var that = this,
+                filemanager = that.filemanager, // get the kendo.ui.FileManager instance
+                options = that.options, // get the options passed through the tool
+                target = options.target // options.target is available only when command is executed from the context menu
+
+            FileManagerPrompt("@Resources.Game.FileManager.NewFilePrompt", "@Model.Settings.DefaultFileName").then(function (data) {
+                kendo.ui.progress($(".k-filemanager-view"), true);
+
+                $.ajax({
+                    type: "POST",
+                    url: "CreateFile/@(Model.Service.ServiceId)",
+                    data: JSON.stringify({ "target": filemanager.path(), "file": data }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "text",
+                    error: function (e) {
+                        kendo.ui.progress($(".k-filemanager-view"), false);
+                        OnError(e);
+                    },
+                    success: function (e) {
+                        filemanager.refresh();
+                        kendo.ui.progress($(".k-filemanager-view"), false);
+                    }
+                });
+            }, function () {
+                //cancel
+            })
+        }
+    });
+    filemanagerNS.commands.EditCommand = filemanagerNS.FileManagerCommand.extend({
+        exec: EditCommand
+    });
+
+    var Model = @Html.Raw(Json.Encode(Model));
+
+    function OnError(e) {
+        if (e.responseText)
+            TCAdmin.Ajax.ShowBasicDialog("error", e.responseText);
+        else if (e.statusText)
+            TCAdmin.Ajax.ShowBasicDialog("error", e.statusText);
+        else
+            TCAdmin.Ajax.ShowBasicDialog("error", e.errorThrown);
+
+        filemanager = $("#filemanager").getKendoFileManager();
+        filemanager.refresh();
+    }
+
+    function OnFileManagerError(e) {
+        if (e.statusText)
+            TCAdmin.Ajax.ShowBasicDialog("error", e.statusText);
+        else
+            TCAdmin.Ajax.ShowBasicDialog("error", e.errorThrown);
+    }
+
+    var firstOpen = true;
+    function OnContextOpen(e) {
+        var supportedDecompression = @Html.Raw(Json.Encode(TCAdmin.SDK.Misc.CompressionTools.SupportedDecompression));
+        var dirs = new Array();
+        var files = new Array();
+        filemanager = $("#filemanager").getKendoFileManager();
+        filemanager.getSelected().forEach(function (entry) {
+            if (entry.isDirectory)
+                dirs.push(entry);
+            else
+                files.push(entry);
+        })
+
+        var contextmenu = $("ul[data-role='contextmenu']");
+        var target = $(e.target);
+        if (target.find("span.k-i-folder").length === 1) {
+            //folder
+            contextmenu.find("[data-command='EditCommand']").hide();
+            contextmenu.find("[data-command='DownloadCommand']").hide();
+            contextmenu.find("[data-command='ExtractCommand']").hide();
+        } else {
+            //Check if editable extension.
+            var file = files[0].name + files[0].extension;
+            var canedit = IsEditable(files[0]);
+
+            //Too large to edit.
+            if (files[0].size > Model.Settings.MaxEditSize) {
+                canedit = false;
+            }
+
+            //file
+            contextmenu.find("[data-command='DownloadCommand']").show();
+            if(canedit)
+                contextmenu.find("[data-command='EditCommand']").show();
+            else
+                contextmenu.find("[data-command='EditCommand']").hide();
+
+            if (supportedDecompression.includes(files[0].extension.substr(1))) {
+                contextmenu.find("[data-command='ExtractCommand']").show();
+                contextmenu.find("[data-command='CompressCommand']").hide();
+            } else {
+                contextmenu.find("[data-command='ExtractCommand']").hide();
+                contextmenu.find("[data-command='CompressCommand']").show();
+            }
+        }
+
+        //Only show common options
+        if (dirs.length + files.length > 1) {
+            contextmenu.find("[data-command='EditCommand']").hide();
+            contextmenu.find("[data-command='DownloadCommand']").hide();
+            contextmenu.find("[data-command='RenameCommand']").hide();
+        } else {
+            contextmenu.find("[data-command='RenameCommand']").show();
+            contextmenu.find("[data-command='RenameCommand']").unbind("click.rename-ext").bind("click.rename-ext", function () {
+                setTimeout(function () { filemanager._view.element.find(".k-textbox").val(files[0].name + files[0].extension); }, 0);
+            });
+            //that.filemanager._view.element.find(".k-textbox").val(viewItem.name + viewItem.extension);
+        }
+
+        //File manager settings
+        @if (!Model.Settings.EnableCompress)
+        {
+            <text>
+                contextmenu.find("[data-command='CompressCommand']").hide();
+            </text>
+        }
+        @if (!Model.Settings.EnableDecompress)
+        {
+            <text>
+                contextmenu.find("[data-command='ExtractCommand']").hide();
+            </text>
+        }
+        @if (!Model.Settings.EnableDownload)
+        {
+            <text>
+                contextmenu.find("[data-command='DownloadCommand']").hide();
+            </text>
+        }
+    }
+
+
+    var EditorWindows = [];
+    var NextWindow;
+    function PreLoadNextWindow() {
+        NextWindow = CreateWindow();
+    }
+
+    function GetNewWindow() {
+        try {
+            EditorWindows.push(NextWindow);
+            newwin = EditorWindows[EditorWindows.length - 1];
+            return newwin;
+        } finally {
+            PreLoadNextWindow();
+        }
+    }
+
+    function CreateWindow() {
+        var w = $('<div style="padding:0"><div id="filetoolbar"></div><iframe id="ifilecontents" src="/3rdParty/codemirror.html?{0}" style="border:0;margin:0"></iframe></div>'.format(Math.random()));
+        $('body').append(w);
+
+        w.find("#filetoolbar").kendoToolBar({
+            items: [
+                { type: "button", text: "Save", icon: "save" },
+                { type: "separator" },
+                { template: "<label for='encoding'>Encoding: </label>" },
+                {
+                    template: "<input id='encoding' style='width:265px' />",
+                    overflow: "never"
+                }
+            ]
+        });
+
+        return w.kendoWindow({
+            visible: false,
+            height: "450px",
+            resizable: true,
+            draggable: {
+                containment: "body"
+            },
+            actions: ["Refresh", "Minimize", "Maximize", "Close"]
+        }).data("kendoWindow");
+    }
+
+    function CreateOpenFiles() {
+        var fmtoolbar = $("#filemanager").getKendoFileManager().toolbar;
+        fmtoolbar.remove("#openfiles");
+
+        if (EditorWindows.length > 0) {
+            openfilebts = [];
+            EditorWindows.forEach(function (item, index) {
+                openfilebts.push({ id: "file_" + index, text: item.title(), selected: true });
+            });
+            fmtoolbar.add({
+                type: "splitButton",
+                text: "Open Files",
+                id: "openfiles",
+                menuButtons: openfilebts,
+                click: function (e) {
+                    EditorWindows.forEach(function (item, index) {
+                        if (item.title() == e.target.text()) {
+                            item.open();
+                            item.restore();
+                            item.toFront();
+                            foundwindow = true;
+                        }
+                    });
+                }
+            });
+            var spacer = $("#filemanager").find(".k-toolbar").find(".k-spacer");
+            $("#openfiles_wrapper").insertBefore(spacer);
+        }
+    }
+
+    function OnItemOpen(e) {
+        item = e.sender.getSelected()[0];
+        if (!item.isDirectory && IsEditable(item)) {
+            EditCommand(e);
+        }
+    }
+
+    function OnItemDrop(ev) {
+        var that = this;
+        if (ev.items.indexOf(ev.target) < 0) {
+            that._confirm({
+                type: 'move',
+                target: ev.target
+            }).done(function () {
+                ev.overwrite = $("#eq1").is(':checked');
+                that.executeCommand({
+                    command: 'CopyCommand',
+                    options: ev
+                });
+            }).fail(function () {
+                ev.overwrite = $("#eq1").is(':checked');
+                that.executeCommand({
+                    command: 'MoveCommand',
+                    options: ev
+                });
+            });
+        }
+        dialog = $("[role='alertdialog']");
+        confirm = $("[data-role='confirm']");
+        confirm.after('<div class="k-window-content" style="padding: 0 0 21px 12px;"><input type="checkbox" id="eq1" class="k-checkbox"><label class="k-checkbox-label" for="eq1">@Resources.Game.FileManager.OverwriteIfExists</label></div>');
+
+        ev.preventDefault();
+        return false;
+    }
+
+    function OnNavigate(e) {
+        //Force refresh if files have been moved/copied.
+        var item = FindFileItem(e.path);
+        if (item && item.dirty) {
+            item.dirty = false;
+            setTimeout(function () { e.sender.refresh(); }, 0)
+        }
+    }
+
+    function IsEditable(item) {
+        var canedit = false;
+        var file = item.name + item.extension;
+        Model.Settings.EditPatterns.forEach(function (entry) {
+            pattern = "^" + entry.replace("[", "\\[").replace("^", "\\^").replace("$", "\\$").replace("+", "\\+").replace("(", "\\(").replace(")", "\\)").replace(".", "\\.").replace("*", ".*").replace("?", ".?") + "$";
+            if (file.match(pattern)) {
+                canedit = true;
+            }
+        });
+
+        return canedit;
+    }
+
+    function FileManagerPrompt(content, defaultValue) {
+        return $('<div id="CustomPrompt"></div>').kendoPrompt({
+            title: content,
+            value: defaultValue,
+            open: function (e) {
+                var win = this;
+                var promptinput = $(".k-prompt-container>.k-textbox");
+                promptinput.on('keydown', function (event) {
+                    if (event.key == "Escape") {
+                        win.close();
+                        win.destroy();
+                    } else if (event.key == "Enter") {
+                        $("[aria-describedby*='CustomPrompt']").find(".k-primary").click()
+                    }
+                })
+            }
+        }).data("kendoPrompt").open().result;
+    }
+
+    function FindFileItem(path) {
+        var fm = $("#filemanager").getKendoFileManager();
+        var result = FindFileItemRecursive(fm.dataSource.data(), path)
+        if (result) {
+            return result;
+        }
+        if (fm.view().listView) {
+            return FindFileItemRecursive(fm.view().listView.dataSource.data(), path)
+
+        } else if (fm.view().grid) {
+            return FindFileItemRecursive(fm.view().grid.dataSource.data(), path)
+        }
+    }
+
+    function FindFileItemRecursive(data, path) {
+        var item = data.find(x => x.path === path)
+        if (item) {
+            return item;
+        } else {
+            for (var i = 0; i < data.length; i++) {
+                var children = data[i]["function(e){return e||[]}"];
+                if (children && children.length) {
+                    item = FindFileItemRecursive(children, path)
+                    if (item) {
+                        return item;
+                    }
+                }
+            }
+        }
+    }
+    </script>

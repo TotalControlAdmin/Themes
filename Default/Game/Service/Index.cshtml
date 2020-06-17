@@ -1,0 +1,66 @@
+﻿@model Models.Game.ServiceAspxModel
+@{
+    Layout = this.GetTemplateFile("Shared/Main.cshtml", true);
+}
+
+@section head{
+    <script src="~/3rdParty/iframeResizer/iframeResizer.min.js"></script>
+    @if (Model.ResizeMainContent)
+    {@Html.Partial("_ResizeMainContent")}
+
+    <style type="text/css">
+        #main .detail {
+            margin: 0;
+        }
+    </style>
+}
+
+@section sidebar{
+    @Html.Action("_PageIcons", "Service", new { id = Model.ServiceId })
+}
+<iframe id="aspxcontent" src="@Url.Content(Model.Url)" scrolling="no" style="@(Model.ShowLoadingAnimation?"display:none;":string.Empty)height:100%;background-color:transparent;"></iframe>
+
+<script>
+    $(document).ready(function () {
+        @if (Model.ShowLoadingAnimation)
+        {
+<text>
+        if (!window.iframeHasLoaded) {
+            window.detailPosition = $(".detail").css("position");
+            setTimeout(function () {
+                if (!window.iframeHasLoaded) {
+                    $(".detail").css("position", "relative");
+                    kendo.ui.progress($(".detail"), true);
+                }
+            }, 200);
+        }
+</text>
+        }
+        @if(Model.ResizeFrameToInnerContent){
+<text>
+            iFrameResize({ heightCalculationMethod: "lowestElement" }, '#aspxcontent');
+</text>
+        }
+    });
+
+    @if (Model.ShowLoadingAnimation)
+    {
+<text>
+    window.iframeLoaded = function () {
+        window.iframeHasLoaded = true;
+        $('#aspxcontent').show();
+        $('#aspxcontent').css('visibility', 'visible');
+        kendo.ui.progress($(".detail"), false);
+        $(".detail").css("position", window.detailPosition);
+    }
+
+    $('#aspxcontent').on('load', function () {
+        iframeLoaded();
+    })
+</text>
+        }
+
+    function OpenScriptPopup(url, name) {
+        TCAdmin.Ajax.ExecutePopupScript(url, name, "@Resources.Game.ServiceHome.Close");
+    }
+</script>

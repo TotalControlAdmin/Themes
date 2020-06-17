@@ -1,0 +1,10 @@
+﻿<script>
+    $(function () {
+        f = function () {
+            diff = $("#main > .detail").offset().top + $('#content > .push').outerHeight(true);
+            $("#main > .detail").height($(window).outerHeight(true) - diff);
+        };
+        $(document).ready(f);
+        $(window).on('resize', f);
+    });
+</script>

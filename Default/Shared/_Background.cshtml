@@ -1,0 +1,32 @@
+﻿@model TCAdmin.Web.MVC.Models.Shared.BackgroundModel
+
+@{
+    var isdark = TCAdmin.SDK.Web.MVC.Template.GetTemplateSetting("CustomTheme.Dark");
+    if (string.IsNullOrEmpty(isdark)) { isdark = "False"; }
+}
+
+    <style>
+    @if (!string.IsNullOrEmpty(Model.BackgroundImage))
+    {
+        if (bool.Parse(isdark))
+        {
+        <text>
+            body {
+                background-image: linear-gradient(to top, rgba(0,0,0,0) -500%, rgba(0,0,0,1)), url(@this.GetTemplateFileUrl(Model.BackgroundImage));
+                background-size: cover;
+                background-attachment: fixed;
+            }
+        </text>
+        }
+        else
+        {
+        <text>
+            body {
+                background-image: linear-gradient(to top, rgba(255,255,255,0) -400%, rgba(255,255,255,1)), url(@this.GetTemplateFileUrl(Model.BackgroundImage));
+                background-size: cover;
+                background-attachment: fixed;
+            }
+        </text>
+        }
+    }
+    </style>

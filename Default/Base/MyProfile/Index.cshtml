@@ -1,0 +1,88 @@
+﻿@model Models.Base.UserProfileModel
+
+@{
+    Layout = this.GetTemplateFile("Shared/Main.cshtml", true);
+}
+
+@section sidebar{
+    @Html.Partial("_DefaultSidebar")
+}
+
+@using (Ajax.BeginForm(new AjaxOptions { OnSuccess = "TCAdmin.Ajax.HandleAjaxResult", OnFailure = "TCAdmin.Ajax.HandleAjaxFailure" }))
+{
+    @Html.AntiForgeryToken()
+    <fieldset class="fieldset-form auto-focus">
+        @Html.ValidationSummary(true)
+        <ul>
+            <li>
+                <dl>
+                    <dt>@Html.LabelFor(m => m.FirstName)</dt>
+                    <dd>@Html.Kendo().TextBoxFor(m => m.FirstName)@Html.ValidationMessageFor(m => m.FirstName)</dd>
+                    <dt>@Html.LabelFor(m => m.LastName)</dt>
+                    <dd>@Html.Kendo().TextBoxFor(m => m.LastName)@Html.ValidationMessageFor(m => m.LastName)</dd>
+                    <dt>@Html.LabelFor(m => m.HomePhone)</dt>
+                    <dd>@Html.Kendo().TextBoxFor(m => m.HomePhone)@Html.ValidationMessageFor(m => m.HomePhone)</dd>
+                    <dt>@Html.LabelFor(m => m.MobilePhone)</dt>
+                    <dd>@Html.Kendo().TextBoxFor(m => m.MobilePhone)@Html.ValidationMessageFor(m => m.MobilePhone)</dd>
+                    <dt>@Html.LabelFor(m => m.Email1)</dt>
+                    <dd>@Html.Kendo().TextBoxFor(m => m.Email1)@Html.ValidationMessageFor(m => m.Email1)</dd>
+                    <dt>@Html.LabelFor(m => m.Email2)</dt>
+                    <dd>@Html.Kendo().TextBoxFor(m => m.Email2)@Html.ValidationMessageFor(m => m.Email2)</dd>
+                    <dt>@Html.LabelFor(m => m.TimeZoneId)</dt>
+                    <dd>@(Html.Kendo().DropDownListFor(m => m.TimeZoneId)
+                            .BindTo(Model.TimeZoneIdList))
+                        @Html.ValidationMessageFor(m => m.TimeZoneId)</dd>
+                </dl>
+            </li>
+            <li>
+                <dl>
+                    <dt>@Html.LabelFor(m => m.AllAddress)</dt>
+                    <dd>@Html.TextAreaFor(m => m.AllAddress, new { @class = "k-input" })@Html.ValidationMessageFor(m => m.AllAddress)</dd>
+                    <dt>@Html.LabelFor(m => m.City)</dt>
+                    <dd>@Html.Kendo().TextBoxFor(m => m.City)@Html.ValidationMessageFor(m => m.City)</dd>
+                    <dt>@Html.LabelFor(m => m.State)</dt>
+                    <dd>@Html.Kendo().TextBoxFor(m => m.State)@Html.ValidationMessageFor(m => m.State)</dd>
+                    <dt>@Html.LabelFor(m => m.Zip)</dt>
+                    <dd>@Html.Kendo().TextBoxFor(m => m.Zip)@Html.ValidationMessageFor(m => m.Zip)</dd>
+                    <dt>@Html.LabelFor(m => m.Country)</dt>
+                    <dd>@(Html.Kendo().DropDownListFor(m => m.Country)
+                            .BindTo(Model.CountryList))
+                        @Html.ValidationMessageFor(m => m.Country)</dd>
+                </dl>
+            </li>
+        </ul>
+        <div class="main-button-group">
+            @(Html.Kendo().Button()
+                .Name("saveProfile")
+                .Icon("save")
+                .HtmlAttributes( new {type = "submit", @class = "k-primary" } )
+                .Content(Resources.Global.SaveChanges))
+
+            @(Html.Kendo().Button()
+                .Name("cancelTwoStep")
+                .Icon("cancel")
+                .HtmlAttributes(new { type = "button" })
+                .Content(Resources.Global.Cancel)
+                .Events(e=>e.Click("CancelProfileClick")))
+        </div>
+    </fieldset>
+}
+
+<script type="text/javascript">
+    function CancelProfileClick() {
+        window.location.href='@this.GetParentUrl()';
+    }
+
+    $(function () {
+        $("#AllAddress").keydown(function (e) {
+            if (e.keyCode == 13) {
+                linecount = $(this).val().split("\n").length;
+                if (linecount < 3) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+    });
+</script>

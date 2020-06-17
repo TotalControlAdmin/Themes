@@ -1,0 +1,50 @@
+﻿@model Models.Base.HomeModel
+
+@{
+    Layout = this.GetTemplateFile("Shared/Main.cshtml", true);
+}
+
+@section head{
+    <script src="~/3rdParty/iframeResizer/iframeResizer.min.js"></script>
+}
+
+@section sidebar{
+    @Html.Partial("_DefaultSidebar")
+}
+
+<iframe id="aspxcontent" src="~/Aspx/Interface/Base/Home.aspx?forcemobile=@Request.Browser.IsMobileDevice.ToString().ToLower()" scrolling="no" style="display:none"></iframe>
+<script>
+    $(document).ready(function () {
+        if (!window.iframeHasLoaded) {
+            window.detailPosition = $(".detail").css("position");
+            setTimeout(function () {
+                if (!window.iframeHasLoaded) {
+                    $(".detail").css("position", "relative");
+                    kendo.ui.progress($(".detail"), true);
+                }
+            }, 200);
+        }
+    });
+
+    window.iframeLoaded = function () {
+        window.iframeHasLoaded = true;
+        $('#aspxcontent').show();
+        $(window).scrollTop(0);
+        kendo.ui.progress($(".detail"), false);
+        $(".detail").css("position", window.detailPosition);
+    }
+
+    $('#aspxcontent').on('load', function () {
+        iframeLoaded();
+    })
+
+    $('#page_addwidget').click(function (e) {
+        /*Windows*/
+        $("#aspxcontent")[0].contentWindow.TCAdmin.LayoutManager.fade('ContentPlaceHolderMain_Home1_WidgetContainerHome_PanelConfiguration');
+        /*Linux*/
+        $("#aspxcontent")[0].contentWindow.TCAdmin.LayoutManager.fade('ctl00_ContentPlaceHolderMain_Home1_WidgetContainerHome_PanelConfiguration');
+        return false;
+    });
+
+    iFrameResize({ heightCalculationMethod: "lowestElement" }, '#aspxcontent')
+</script>

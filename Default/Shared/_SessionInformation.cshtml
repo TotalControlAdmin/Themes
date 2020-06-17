@@ -1,0 +1,23 @@
+﻿@model Models.Base.SessionInformationModel
+
+<fieldset>
+    <legend>@Resources.Base.SessionInformation.SessionInfo</legend>
+    <ul><li>
+            @Html.LabelFor(model => model.LastLogin)
+            <div>@Html.DisplayFor(model => model.LastLogin)</div>
+        </li>
+        <li>
+            @Html.LabelFor(model => model.LastLoginIp)
+            <div>@Html.DisplayFor(model => model.LastLoginIp)</div>
+        </li>
+    </ul>
+</fieldset>
+
+<fieldset>
+    <legend>@Resources.Base.SessionInformation.Notifications</legend>
+    <ul>
+        <li>
+            <a href="~/Interface/Base/MyNotifications"><span id="UnreadMessageCount">...</span></a>
+        </li>
+    </ul>
+</fieldset>

@@ -1,0 +1,25 @@
+﻿@{
+    Layout = this.GetTemplateFile("Shared/Main.cshtml", true);
+}
+
+@section sidebar{
+    @Html.Partial("_DefaultSidebar")
+}
+
+@{Html.Kendo().TabStrip()
+              .Animation(false)
+              .Name("tabstrip")
+              .Items(tabstrip =>
+              {
+                  tabstrip.Add().Text(Resources.Base.ChangePassword.ChangePasswordTab)
+                      .Selected(true)
+                      .Content(@<text>
+    @Html.Action("_ChangePassword", "AccountSecurity")
+                    </text>);
+         tabstrip.Add().Text(Resources.Base.TwoStepVerification.TwoStepTab)
+             .Content(@<text>
+    @Html.Action("_TwoStepVerification", "AccountSecurity")
+            </text>);
+
+}).Render();
+}

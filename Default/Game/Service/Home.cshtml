@@ -1,0 +1,108 @@
+﻿@model Models.Game.ServiceModel
+
+@{
+    Layout = this.GetTemplateFile("Shared/Main.cshtml", true);
+}
+
+@section head{
+
+    @Scripts.Render(this.GetTemplateFileUrl("~/Scripts/CallBack.js", true))
+    @Scripts.Render(this.GetTemplateFileUrl("~/Scripts/ServiceManager.js", true))
+    @Scripts.Render(this.GetTemplateFileUrl("Game/Service/_ServiceStatus.js", true))
+}
+
+@section sidebar{
+    @Html.Action("_PageIcons", "Service", new { id = Model.ServiceId })
+}
+
+<fieldset class="fieldset-form">
+    <h1>@Html.DisplayFor(m => m.NameNoHtml)</h1>
+    <ul>
+        @{ 
+            var _serviceStatus = "_ServiceStatus";
+            if (!string.IsNullOrEmpty(Model.CustomStatusView))
+            {
+                _serviceStatus = Model.CustomStatusView.Replace(".cshtml", string.Empty);
+            }
+        }
+        @Html.Partial(_serviceStatus, Model)
+
+        @if ((bool)this.ViewData["Permission.LivePlayerStats"] | (bool)this.ViewData["Permission.LiveCpuStats"] | (bool)this.ViewData["Permission.LiveMemoryStats"] | (bool)this.ViewData["Permission.LiveBandwidthStats"])
+        {
+            <li>
+                <dl>
+                    @if ((bool)this.ViewData["Permission.LivePlayerStats"])
+                    {
+                        <dt><label>@Resources.Game.ServiceHome.Players</label></dt>
+                        <dd>
+                            @(Html.Kendo().ProgressBar()
+                                                                .Name("PlayersBar")
+                                                                .Type(ProgressBarType.Value)
+                                                                .Animation(a => a.Duration(0))
+                                                                .Max(Model.Slots)
+                                                                .Value(Model.CurrentPlayers)
+                            )
+                        </dd>
+                    }
+                    @if ((bool)this.ViewData["Permission.LiveCpuStats"])
+                    {
+                        <dt><label>@Resources.Game.ServiceHome.CPU</label></dt>
+                        <dd>
+                            @(Html.Kendo().ProgressBar()
+                                                                .Name("CPUBar")
+                                                                .Type(ProgressBarType.Percent)
+                                                                .Animation(a => a.Duration(0))
+                                                                .Max(100)
+                                                                .Value(Model.CurrentCpu)
+                            )
+                        </dd>
+                    }
+                    @if ((bool)this.ViewData["Permission.LiveMemoryStats"])
+                    {
+                        <dt><label>@Resources.Game.ServiceHome.Memory</label></dt>
+                        <dd>
+                            @(Html.Kendo().ProgressBar()
+                                                                .Name("MemoryBar")
+                                                                .Type(ProgressBarType.Percent)
+                                                                .Animation(a => a.Duration(0))
+                                                                .Max(100)
+                                                                .Value(Model.CurrentMemoryPercent)
+                            )
+                        </dd>
+                    }
+                    @if ((bool)this.ViewData["Permission.LiveBandwidthStats"])
+                    {
+                        <dt><label>@Resources.Game.ServiceHome.Bandwidth</label></dt>
+                        <dd>
+                            @(Html.Kendo().ProgressBar()
+                                                                .Name("BandwidthBar")
+                                                                .Type(ProgressBarType.Percent)
+                                                                .Animation(a => a.Duration(0))
+                                                                .Max(100)
+                                                                .Value(0)
+                            )
+                        </dd>
+                    }
+                    @if (Model.FastDownloadEnabled & Model.FastDownloadQuota > 0)
+                    {
+                        <dt><label>@Resources.Game.ServiceHome.FastDownloads</label></dt>
+                        <dd>
+                            @(Html.Kendo().ProgressBar()
+                                                                .Name("FastDownloadBar")
+                                                                .Type(ProgressBarType.Percent)
+                                                                .Animation(a => a.Duration(0))
+                                                                .Max(Model.FastDownloadQuota)
+                                                                .Value(Model.FastDownloadUsage)
+                            )
+                        </dd>
+                    }
+                    <dt><label>@Resources.Game.ServiceHome.AutoRefresh</label></dt>
+                    <dd><input id="auto-refresh-switch" /></dd>
+                </dl>
+            </li>
+        }
+    </ul>
+</fieldset>
+<script>
+_ServiceStatus.Init(@Html.Raw(Json.Encode(Model)), "@TCAdmin.SDK.Utility.AppSettings.Get("TCAdmin.AutoRefreshTime")");
+</script>

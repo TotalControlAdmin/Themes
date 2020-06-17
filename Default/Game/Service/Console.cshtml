@@ -1,0 +1,47 @@
+﻿@model Models.Game.ServiceAspxModel
+@{
+    Layout = this.GetTemplateFile("Shared/Main.cshtml", true);
+}
+
+@section head{
+    <script src="~/3rdParty/iframeResizer/iframeResizer.min.js"></script>
+    <script>
+        $(function () {
+            $(document).ready(function () {
+                @if(Model.ResizeFrameToInnerContent){
+                    <text>
+                    iFrameResize({ heightCalculationMethod: "lowestElement" }, '#aspxcontent');
+                    </text>
+                }
+            });
+        });
+
+        @if (Model.ShowLoadingAnimation)
+        {
+            <text>
+            $(function() {
+                $('#aspxcontent').on('load', function() {
+                    $("#divloading").hide();
+                    $(this).show();
+                });
+            });
+            </text>
+        }
+    </script>
+
+    @if (Model.ResizeMainContent)
+    {@Html.Partial("_ResizeMainContent")}
+
+    <style type="text/css">
+        #main .detail {
+            margin: 0;
+        }
+    </style>
+}
+
+@section sidebar{
+    @Html.Action("_PageIcons", "Service", new { id = Model.ServiceId })
+}
+@if (Model.ShowLoadingAnimation)
+{<div style="text-align:center" id="divloading"><img src="~/Aspx/App_Themes/MVC/Images/ControlPanel/Loading.gif" alt="loading..." /></div>}
+<iframe id="aspxcontent" src="@Url.Content(Model.Url)" scrolling="no" style="@(Model.ShowLoadingAnimation?"display:none;":string.Empty)height:100%;background-color:transparent;"></iframe>

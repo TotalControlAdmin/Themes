@@ -1,0 +1,106 @@
+﻿@{
+    var module = string.Empty;
+    var page = string.Empty;
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values.ContainsKey("module"))
+    {
+        module = (string)HttpContext.Current.Request.RequestContext.RouteData.Values["module"];
+    }
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values.ContainsKey("page"))
+    {
+        page = (string)HttpContext.Current.Request.RequestContext.RouteData.Values["page"];
+    }
+}
+
+@{
+    switch (module + "/" + page)
+    {
+        case "Base/Users":
+            var userstats = TCAdmin.SDK.Objects.User.GetStats();
+
+            <fieldset>
+                <legend>@Resources.Base.UserStatsInfo.UserStats</legend>
+                <ul>
+                    <li>
+                        <label>@Resources.Base.UserStatsInfo.TotalUsers</label>
+                        <div>@userstats.TotalUsers</div>
+                    </li>
+                </ul>
+            </fieldset>
+            <fieldset>
+                <legend>@Resources.Base.UserStatsInfo.ByStatus</legend>
+                <ul>
+                    <li>
+                        <label>@Resources.Base.UserStatsInfo.ActiveUsers</label>
+                        <div>@userstats.ActiveUsers</div>
+                    </li>
+                    <li>
+                        <label>@Resources.Base.UserStatsInfo.SuspendedUsers</label>
+                        <div>@userstats.SuspendedUsers</div>
+                    </li>
+                </ul>
+            </fieldset>
+            <fieldset>
+                <legend>@Resources.Base.UserStatsInfo.ByRole</legend>
+                <ul>
+                    @foreach (var key in userstats.UsersByRole.Keys)
+                    {
+                        <li>
+                            <label>@key</label>
+                            <div>@(userstats.UsersByRole[key])</div>
+                        </li>
+                    }
+                </ul>
+            </fieldset>
+            break;
+        case "Base/EditUser":
+        case "Base/UserHome":
+        case "Ftp/EditUser":
+        case "Base/UserSubUsers":
+            var selecteduser = TCAdmin.SDK.Objects.User.GetSelectedUser();
+
+        <fieldset>
+            <legend>@Resources.Base.SessionInformation.UserSessionInfoFormat(selecteduser.UserName)</legend>
+            <ul>
+                <li>
+                    <label>@Resources.Base.SessionInformation.ParentUser</label>
+                    <div>@selecteduser.OwnerIdFriendlyName</div>
+                </li>
+                <li>
+                    <label>@Resources.Base.SessionInformation.Email</label>
+                    <div><a href="mailto:@selecteduser.Email1">@selecteduser.Email1</a></div>
+                </li>
+                <li>
+                    <label>@Resources.Base.SessionInformation.LastLogin</label>
+                    <div>@selecteduser.LastLogin</div>
+                </li>
+                <li>
+                    <label>@Resources.Base.SessionInformation.LastLoginIp</label>
+                    <div>@selecteduser.LastLoginIp</div>
+                </li>
+                <li>
+                    <label>@Resources.Base.SessionInformation.Status</label>
+                    <div class="@(selecteduser.Status== TCAdmin.SDK.Objects.UserStatus.Active?"green-label":"red-label")">@selecteduser.Status</div>
+                </li>
+                <li>
+                    <label>@Resources.Base.SessionInformation.SubUsers</label>
+                    <div>@selecteduser.GetSubUsers().Count</div>
+                </li>
+                <li>
+                    <label>@Resources.Base.SessionInformation.Services</label>
+                    <div>@TCAdmin.GameHosting.SDK.Objects.Service.GetServices(selecteduser, false).Count</div>
+                </li>
+            </ul>
+        </fieldset>
+            break;
+        default:
+            @Html.Action("_SessionInformation", "Home")
+
+            var currentuser = TCAdmin.SDK.Web.Session.GetCurrentUser();
+            if (currentuser.UserType == TCAdmin.SDK.Objects.UserType.Admin || (currentuser.UserType == TCAdmin.SDK.Objects.UserType.SubAdmin & currentuser.OwnerId == TCAdmin.SDK.Security.SecurityManager.SystemAdminUserId))
+            {
+                @Html.Action("_SystemInformation", "Home")
+            }
+
+            break;
+    }
+}

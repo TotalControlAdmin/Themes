@@ -1,0 +1,49 @@
+﻿@model List<TCAdmin.SDK.Web.MVC.Models.PageIconInfo>
+
+@functions{
+    public MvcHtmlString LinkIcon(string image)
+    {
+        if (string.IsNullOrEmpty(image)) { return new MvcHtmlString(string.Empty); }
+        return new MvcHtmlString(string.Format("<img src=\"{0}\" />", this.GetTemplateFileUrl(image)));
+    }
+}
+
+<fieldset class="links" id="serviceicons">
+    <legend>@Resources.Grid.Manage</legend>
+    <ul>
+        @foreach (var link in Model)
+        {
+            var id=link.Attributes["IconId"].ToString();
+            var hascustomicon=link.Attributes.ContainsKey("HasCustomIcon") && (bool)link.Attributes["HasCustomIcon"];
+            if (link.Attributes.ContainsKey("ConfirmMessage"))
+            {
+                var msg = link.Attributes["ConfirmMessage"].ToString().Replace("\"", "\\\"");
+                var isajax = (link.Attributes.ContainsKey("Ajax-Exec") && bool.Parse((string)link.Attributes["Ajax-Exec"]));
+                var ispopup = (link.Attributes.ContainsKey("Popup-Exec") && bool.Parse((string)link.Attributes["Popup-Exec"]));
+
+                <li><a id="@id" class="page-icon-confirm service-icon @(id.IndexOf("ScriptId")!=-1?"service-script-icon":"") @(id.IndexOf("LinkId")!=-1?"service-link-icon":"") @(hascustomicon?"custom-icon-image":string.Empty)" href="@(isajax|ispopup? "#":link.NavigateUrl)" class="page-icon-confirm" @Html.Raw(isajax|ispopup?string.Format("{0}-url=\"{1}\"",isajax?"ajax":"popup", link.NavigateUrl):string.Empty) confirm="@msg">@this.LinkIcon(link.ImageUrl64x64)<div><span>@link.Text</span></div></a></li>
+            }
+            else
+            {
+                <li><a id="@id" class="service-icon @(id.IndexOf("ScriptId")!=-1?"service-script-icon":"") @(id.IndexOf("LinkId")!=-1?"service-link-icon":"") @(hascustomicon?"custom-icon-image":string.Empty)" target="@(link.NewPage?"_blank":"_self")" href="@link.NavigateUrl">@LinkIcon(link.ImageUrl64x64)<div><span>@link.Text</span></div></a></li>
+            }
+        }
+    </ul>
+</fieldset>
+
+<script>
+    $('.page-icon-confirm').click(function () {
+        var link = $(this);
+        TCAdmin.Ajax.ShowConfirmDialog(link.text(), link.attr("confirm"), function () {
+            if (link.attr("ajax-url")) {
+                TCAdmin.Ajax.ExecuteSilentScript(link.attr("ajax-url"), link.text(), "@Resources.Game.ServiceHome.Close");
+            } else if (link.attr("popup-url")) {
+                TCAdmin.Ajax.ExecutePopupScript(link.attr("popup-url"), link.text(), "@Resources.Game.ServiceHome.Close");
+
+            } else {
+                window.location.href = link.attr("href");
+            }
+        });
+        return false;
+    })
+</script>

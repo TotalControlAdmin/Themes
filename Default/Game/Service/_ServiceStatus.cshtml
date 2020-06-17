@@ -1,0 +1,147 @@
+﻿
+@model Models.Game.ServiceModel
+<li id="ServiceInformation">
+    <dl>
+        <dt><label>@Resources.Game.ServiceHome.ConnectionInfo</label></dt>
+        <dd>
+            <label style="display:inline;">@Html.DisplayFor(m => m.ConnectionInfo)</label>
+            @if (Model.ServiceStatus == TCAdmin.Interfaces.Server.ServiceStatus.Running && !string.IsNullOrEmpty(Model.JoinUrl))
+            {
+                @Html.Raw("&nbsp;&nbsp;&nbsp;&nbsp;")
+                <a id="join" style="margin-top:-10px;" href='@Model.JoinUrl'>@Resources.Game.ServiceHome.Join</a>
+                <script>
+                    $(document).ready(function () {
+                        $("#join").kendoButton({
+                            icon: "redo"
+                        });
+                    });
+                </script>
+            }
+        </dd>
+        @if ((bool)this.ViewData["Permission.Ftp"])
+        {
+            <dt><label>@Resources.Game.ServiceHome.FtpInfo</label></dt>
+            <dd><a href="ftp://@Model.FtpInfo" target="_blank">@Html.DisplayFor(m => m.FtpInfo)</a></dd>
+        }
+        @if (Model.QueryPort != Model.GamePort & Model.QueryPort > 0)
+        {
+            <dt><label>@Resources.Game.ServiceHome.QueryInfo</label></dt>
+            <dd><label>@Html.DisplayFor(m => m.QueryInfo)</label></dd>
+        }
+        @if (Model.RConPort != Model.GamePort & Model.RConPort > 0)
+        {
+            <dt><label>@Resources.Game.ServiceHome.RConInfo</label></dt>
+            <dd><label>@Html.DisplayFor(m => m.RConInfo)</label></dd>
+        }
+        @if ((bool)this.ViewData["Permission.OwnerName"])
+        {
+            <dt><label>@Resources.Game.ServiceHome.Owner</label></dt>
+            <dd><a href="@Url.Content(string.Format("~/Interface/Base/UserHome?userid={0}", Model.UserId))" target="_blank">@Html.DisplayFor(m => m.UserName)</a></dd>
+        }
+        @if ((bool)this.ViewData["Permission.ServerName"])
+        {
+            <dt><label>@Resources.Game.ServiceHome.Server</label></dt>
+            <dd><a href="@Url.Content(string.Format("~/Interface/Base/EditServer?serverid={0}", Model.ServerId))" target="_blank">@Html.DisplayFor(m => m.ServerName)</a></dd>
+        }
+        @if (Model.FastDownloadEnabled)
+        {
+            <dt><label>@Resources.Game.ServiceHome.FastDownloads</label></dt>
+            <dd><a href="@Model.FastDownloadUrl" target="_blank">@Model.FastDownloadUrl.Replace("https://", string.Empty).Replace("http://", string.Empty)</a></dd>
+        }
+        @if (Model.ServiceStatus == TCAdmin.Interfaces.Server.ServiceStatus.Running)
+        {
+            <dt><label>@Resources.Game.ServiceHome.StartedOn</label></dt>
+            <dd>
+                <label>@Model.Status.StartTime</label>
+            </dd>
+        }
+        <dt><label>@Resources.Game.ServiceHome.Status</label></dt>
+        <dd>
+            <label class="@(Model.ServiceStatus == TCAdmin.Interfaces.Server.ServiceStatus.Running?"green-label":(Model.ServiceStatus == TCAdmin.Interfaces.Server.ServiceStatus.Processing)?"orange-label":"red-label")">@Model.ServiceStatus.Translate()</label>
+            @if (Model.ServiceStatus == TCAdmin.Interfaces.Server.ServiceStatus.Running & (TCAdmin.SDK.Web.Session.GetCurrentUser().UserType == TCAdmin.SDK.Objects.UserType.Admin | TCAdmin.SDK.Web.Session.GetCurrentUser().IsTopLevelSubAdmin()))
+            {
+                <label class="@(Model.CurrentPid > 0?"green-label":"red-label")">(PID @Model.CurrentPid)</label>
+            }
+        </dd>
+        <dt></dt>
+        <dd>
+            @using (Ajax.BeginForm("Command", new { id = Model.ServiceId }, new AjaxOptions { OnSuccess = "TCAdmin.Ajax.HandleAjaxResultPartial($('#ServiceInformation'), arguments[0]);", OnFailure = "TCAdmin.Ajax.HandleAjaxFailure" }, new { id = "action-form" }))
+            {
+                @Html.ValidationSummary(true)
+                @Html.AntiForgeryToken()
+                @Html.Hidden("Command")
+                <div class="main-button-group-left">
+                    @if (Model.ServiceStatus != TCAdmin.Interfaces.Server.ServiceStatus.Processing)
+                    {
+                        if ((bool)this.ViewData["Permission.StartStop"] & Model.ServiceStatus != TCAdmin.Interfaces.Server.ServiceStatus.Disabled)
+                        {
+                            if (Model.ServiceStatus == TCAdmin.Interfaces.Server.ServiceStatus.Running)
+                            {
+                                @(Html.Kendo().ButtonGroup()
+                                   .Name("service-controls")
+                                   .Items(t =>
+                                   {
+                                       t.Add().Text(Resources.Game.ServiceHome.Stop).Icon("stop").HtmlAttributes(new { @class = "red-button", action="stop" });
+                                       t.Add().Text(Resources.Game.ServiceHome.Restart).Icon("rotate").HtmlAttributes(new { @class = "orange-button", action = "restart" });
+                                       t.Add().Text(Resources.Game.ServiceHome.More).Icon("more-horizontal").HtmlAttributes(new { action = "more" });
+                                   }).Events(e=>e.Select("onActionSelect"))
+                                )
+
+                            }
+                            else
+                            {
+
+                                @(Html.Kendo().ButtonGroup()
+                                   .Name("service-controls")
+                                   .Items(t =>
+                                   {
+                                       t.Add().Text(Resources.Game.ServiceHome.Start).Icon("video-external").HtmlAttributes(new { @class = "green-button", action = "start" });
+                                       t.Add().Text(Resources.Game.ServiceHome.More).Icon("more-horizontal").HtmlAttributes(new { action = "more" });
+                                   }).Events(e => e.Select("onActionSelect"))
+                                )
+                            }
+
+                        }
+                        else
+                        {
+                                @(Html.Kendo().ButtonGroup()
+                                   .Name("service-controls")
+                                   .Items(t =>
+                                   {
+                                       t.Add().Text(Resources.Game.ServiceHome.More).Icon("more-horizontal").HtmlAttributes(new { action = "more" });
+                                   }).Events(e => e.Select("onActionSelect"))
+                                )
+                        }
+
+                    }
+                </div>
+            }
+        </dd>
+    </dl>
+</li>
+
+<script>
+    function onActionSelect(e) {
+        action = this.current().attr("action");
+        switch (action) {
+            case "stop":
+            case "start":
+            case "restart":
+                this.enable(false);
+                Command(action)
+                break;
+            case "more":
+                ShowMore();
+            default:
+        }
+    }
+
+    function ShowMore() {
+        window.location.href='@Url.Action("Actions", "Service", new { id = Model.ServiceId })';
+    }
+
+    function Command(action) {
+        $('#Command').val(action);
+        $('#action-form').submit();
+    }
+</script>

@@ -1,0 +1,23 @@
+﻿<div class="grid">
+@{
+    //var grid = Html.Kendo().Grid((IEnumerable<TCAdmin.Web.MVC.Models.Base.UserModel>)this.Model.DataSource);
+    //To get autocomplete:
+    //Kendo.Mvc.UI.Fluent.GridBuilder<TCAdmin.SDK.Web.MVC.Models.BaseModel> grid = Html.Kendo().Grid(this.Model.DataSource);
+    var grid = Html.Kendo().Grid(this.Model.DataSource);
+    grid.Name(this.Model.GridSettings.Name);
+    if (this.Model.GridSettings.EnableGroup) { grid.Groupable(); }
+    if (this.Model.GridSettings.EnableSort) { grid.Sortable(); }
+    if (this.Model.GridSettings.EnableKeyboard) { grid.Navigatable(); }
+    if (this.Model.GridSettings.EnableFilter) { grid.Filterable(); }
+    if (this.Model.GridSettings.EnablePaging) { grid.Pageable(new Action<Kendo.Mvc.UI.Fluent.PageableBuilder>((builder) => ((TCAdmin.SDK.Web.MVC.Controllers.GridController)this.ViewContext.Controller).ConfigurePaging(builder))); }
+    if (this.Model.GridSettings.EnableResize) { grid.Resizable(new Action<Kendo.Mvc.UI.Fluent.GridResizingSettingsBuilder>((builder) => ((TCAdmin.SDK.Web.MVC.Controllers.GridController)this.ViewContext.Controller).ConfigureResize(builder))); }
+    if (this.Model.GridSettings.EnableReOrder) { grid.Reorderable(new Action<Kendo.Mvc.UI.Fluent.GridReorderingSettingsBuilder>((builder) => ((TCAdmin.SDK.Web.MVC.Controllers.GridController)this.ViewContext.Controller).ConfigureReorder(builder))); }
+    if (this.Model.GridSettings.EnableScriptEvents) { grid.Events(new Action<Kendo.Mvc.UI.Fluent.GridEventBuilder>((builder) => ((TCAdmin.SDK.Web.MVC.Controllers.GridController)this.ViewContext.Controller).ConfigureScriptEvents(builder))); }
+    if (this.Model.GridSettings.EnableScroll) { grid.Scrollable(new Action<Kendo.Mvc.UI.Fluent.GridScrollSettingsBuilder>((builder) => ((TCAdmin.SDK.Web.MVC.Controllers.GridController)this.ViewContext.Controller).ConfigureScroll(builder, this.Model.GridSettings.EnableScrollVirtual))); }
+    if (this.Model.GridSettings.EnableSelection) { grid.Selectable(new Action<Kendo.Mvc.UI.Fluent.GridSelectionSettingsBuilder>((builder) => ((TCAdmin.SDK.Web.MVC.Controllers.GridController)this.ViewContext.Controller).ConfigureSelection(builder, this.Model.GridSettings.SelectionMode, this.Model.GridSettings.SelectionType))); }
+    ((dynamic)this.ViewContext.Controller).ConfigureGrid(this.Model, grid);
+    grid.Render();
+
+
+}
+</div>

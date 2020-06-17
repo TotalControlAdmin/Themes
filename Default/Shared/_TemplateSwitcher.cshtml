@@ -1,0 +1,22 @@
+﻿@{ 
+    var owner = string.IsNullOrEmpty(TCAdmin.SDK.Web.MVC.Template.GetTemplateSetting("Theme.Owner")) ? 0 : int.Parse(TCAdmin.SDK.Web.MVC.Template.GetTemplateSetting("Theme.Owner"));
+    var alt = TCAdmin.SDK.Web.MVC.Template.GetTemplateSetting("CustomTheme.AlternateTheme");
+    var isdark = TCAdmin.SDK.Web.MVC.Template.GetTemplateSetting("CustomTheme.Dark");
+    if (string.IsNullOrEmpty(isdark)) { isdark = "False"; }
+    var icon = this.GetTemplateFileUrl(bool.Parse(isdark) ? "Images/Light.png" : "Images/Dark.png");
+}
+
+@if (!string.IsNullOrEmpty(alt)) { 
+<div class="template-switcher-container">
+    <a href="#" id="TemplateSwitcherLink"><img src="@icon" /></a>
+</div>
+
+<script>
+    $("#TemplateSwitcherLink").click(function () {
+        createCookie('__TCAdmin2Template', '@alt');
+        createCookie('__TCAdmin2Theme', '@string.Format("{0}:{1}", owner, alt)');
+        window.location.href = window.location.href;
+        return false;
+    });
+</script>
+}

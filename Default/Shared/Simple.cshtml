@@ -1,0 +1,20 @@
+﻿@using TCAdmin.Web.MVC.Models.Shared
+
+<!DOCTYPE html>
+<html>
+<head>
+    @Html.Action("_Background", "Header")
+    @Html.Partial("_Head")
+    @RenderSection("head", required: false)
+</head>
+<body>
+    @(Html.Kendo().Notification()
+                        .Name("popupNotification")
+    )
+    <div id="main">
+        <div class="detail">@RenderBody()</div>
+        @Html.Partial("_Dialogs")
+    </div>
+    @RenderSection("scripts", required: false)
+</body>
+</html>
